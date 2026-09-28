@@ -9,19 +9,19 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // تجاهل مسارات الأدمن و API
-  if (!pathname.startsWith("/admin") && !pathname.startsWith("/api")) {
-    return intlMiddleware(req);
-  }
-
-  // حماية مسارات الأدمن
-  if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
-    const session = req.cookies.get("session")?.value;
-    if (!session) {
-      return NextResponse.redirect(new URL("/admin/login", req.url));
+  if (pathname.startsWith("/admin") || pathname.startsWith("/api")) {
+    // حماية مسارات الأدمن
+    if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
+      const session = req.cookies.get("session")?.value;
+      if (!session) {
+        return NextResponse.redirect(new URL("/admin/login", req.url));
+      }
     }
+    return NextResponse.next();
   }
 
-  return NextResponse.next();
+  // دع next-intl يتكفل بباقي المسارات (بما فيها تحويل / إلى /ar)
+  return intlMiddleware(req);
 }
 
 export const config = {

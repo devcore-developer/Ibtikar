@@ -13,15 +13,6 @@ const nextConfig = {
       },
     ],
   },
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/ar',
-        permanent: false,
-      },
-    ];
-  },
   async headers() {
     return [
       {
