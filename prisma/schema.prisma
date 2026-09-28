@@ -3,7 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // Change to mysql or sqlite if needed
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model AdminUser {
