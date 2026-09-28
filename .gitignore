@@ -3,3 +3,11 @@ node_modules
 .env
 .env.local
 .env.production
+.neon
+# Neon CLI & AI Skills
+.agents/
+.claude/
+.cursor/
+.devin/
+skills-lock.json
+neon.ts
