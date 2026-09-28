@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Change to mysql or sqlite if needed
+}
+
+model AdminUser {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id            String    @id @default(uuid())
+  nameAr        String
+  nameEn        String
+  slug          String    @unique
+  descriptionAr String?
+  descriptionEn String?
+  isActive      Boolean   @default(true)
+  products      Product[]
+}
+
+model Product {
+  id                 String   @id @default(uuid())
+  nameAr             String
+  nameEn             String
+  slug               String   @unique
+  descriptionAr      String?
+  descriptionEn      String?
+  shortDescriptionAr String?
+  shortDescriptionEn String?
+  price              Float
+  partNumber         String?
+  brand              String?
+  isActive           Boolean  @default(true)
+  categoryId         String
+  category           Category @relation(fields: [categoryId], references: [id])
+  orderItems         OrderItem[]
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  customerName  String
+  phone         String
+  area          String
+  address       String
+  notes         String?
+  subtotal      Float
+  deliveryFee   Float
+  total         Float
+  paymentMethod String
+  status        String      @default("PENDING")
+  createdAt     DateTime    @default(now())
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id          String  @id @default(uuid())
+  orderId     String
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id])
+  productName String
+  price       Float
+  quantity    Int
+  total       Float
+}
+
+model Technician {
+  id           String   @id @default(uuid())
+  nameAr       String
+  nameEn       String
+  slug         String   @unique
+  specialtyAr  String
+  specialtyEn  String
+  bioAr        String?
+  bioEn        String?
+  phone        String?
+  experience   String?
+  serviceSlugs String[]
+  isActive     Boolean  @default(true)
+}
+
+model MaintenanceRequest {
+  id                  String   @id @default(uuid())
+  customerName        String
+  phone               String
+  area                String
+  address             String
+  applianceType       String
+  serviceId           String
+  brand               String?
+  model               String?
+  problemDescription  String?
+  preferredContactTime String?
+  notes               String?
+  status              String   @default("PENDING")
+  createdAt           DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String
+  email     String?
+  subject   String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  id    String @id
+  value String
+}
