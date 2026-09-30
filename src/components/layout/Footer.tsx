@@ -40,7 +40,7 @@ export function Footer() {
             <div className="flex items-center gap-3">
               <Image 
                 src="/logos/logo.png" 
-                alt="Ibtikar Al Khaleej Logo" 
+                alt="Ebtikar Al Khaleej Logo" 
                 width={48} 
                 height={48} 
                 className="rounded-lg"

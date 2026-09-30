@@ -18,8 +18,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   
   const isAr = locale === "ar";
   return {
-    title: isAr ? `${cat.nameAr} | ابتكار الخليج` : `${cat.nameEn} | Ibtikar Al Khaleej`,
-    description: isAr ? `تصفح ${cat.nameAr} المتوفرة لدى ابتكار الخليج في الجهراء، الكويت.` : `Browse ${cat.nameEn} available at Ibtikar Al Khaleej in Al Jahra, Kuwait.`
+    title: isAr ? `${cat.nameAr} | ابتكار الخليج` : `${cat.nameEn} | Ebtikar Al Khaleej`,
+    description: isAr ? `تصفح ${cat.nameAr} المتوفرة لدى ابتكار الخليج في الجهراء، الكويت.` : `Browse ${cat.nameEn} available at Ebtikar Al Khaleej in Al Jahra, Kuwait.`
   };
 }
 

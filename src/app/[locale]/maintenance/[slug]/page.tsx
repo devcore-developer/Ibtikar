@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!service) return {};
   const isAr = locale === "ar";
   return {
-    title: isAr ? `${service.nameAr} | ابتكار الخليج` : `${service.nameEn} | Ibtikar Al Khaleeg`,
+    title: isAr ? `${service.nameAr} | ابتكار الخليج` : `${service.nameEn} | Ebtikar Al Khaleeg`,
   };
 }
 

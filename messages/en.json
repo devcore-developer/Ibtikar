@@ -9,7 +9,7 @@
   },
   "Hero": {
     "eyebrow": "Professional Quality Services",
-    "title": "Ibtikar Al Khaleej for Electrical Appliances",
+    "title": "Ebtikar Al Khaleej for Electrical Appliances",
     "subtitle": "Professional maintenance, genuine spare parts, and reliable service you can count on.",
     "primaryBtn": "Explore Services",
     "secondaryBtn": "Request Maintenance",
@@ -33,7 +33,7 @@
   },
   "Home": {
     "heroEyebrow": "Professional Appliance Services",
-    "heroTitle": "Ibtikar Al Khaleej for Electrical Appliances",
+    "heroTitle": "Ebtikar Al Khaleej for Electrical Appliances",
     "heroSubtitle": "Professional maintenance, genuine spare parts, and reliable service you can count on.",
     "browseParts": "Explore Services",
     "requestMaintenance": "Request Maintenance",
@@ -63,7 +63,7 @@
     "maintenanceTitle": "Appliance Maintenance & Repair",
     "maintenanceSubtitle": "Need a technician? We provide maintenance and repair services for electrical appliances through specialized technicians.",
     "maintenanceList": ["Fridge Maintenance", "Washer Maintenance", "AC Maintenance", "Vacuum Maintenance", "Cooker Maintenance", "Other Repair Services"],
-    "whyUsTitle": "Why Ibtikar Al Khaleej?",
+    "whyUsTitle": "Why Ebtikar Al Khaleej?",
     "whyUs": {
       "experience": { "title": "Parts Expertise", "desc": "We offer a diverse range of electrical appliance spare parts." },
       "service": { "title": "Maintenance Service", "desc": "You can contact us to request maintenance and repair services." },
@@ -87,14 +87,47 @@
     "ctaWhatsapp": "WhatsApp",
     "ctaContact": "Contact Us"
   },
+  "About": {
+    "title": "About Us",
+    "intro": "Ebtikar Al Khaleej for electrical and electronic appliances, spare parts and repair. We provide professional maintenance and genuine spare parts in Al Jahra, Kuwait.",
+    "servicesTitle": "What We Provide",
+    "services": {
+      "parts": "Spare Parts",
+      "partsDesc": "Variety of spare parts for electrical appliances",
+      "repair": "Appliance Repair",
+      "repairDesc": "Maintenance and repair services for home appliances",
+      "maintenance": "Maintenance Services",
+      "maintenanceDesc": "Specialized technicians for your appliance maintenance",
+      "support": "Customer Support",
+      "supportDesc": "Team ready to help you and answer your inquiries"
+    },
+    "categoriesTitle": "Appliances We Service",
+    "categories": {
+      "fridge": "Refrigerators",
+      "washer": "Washing Machines",
+      "ac": "Air Conditioners",
+      "vacuum": "Vacuum Cleaners",
+      "cooker": "Cookers",
+      "other": "Other Appliances"
+    },
+    "whyUsTitle": "Why Choose Us?",
+    "whyUs": {
+      "ease": "Convenient Spare Parts Access",
+      "maintenance": "Maintenance and Repair Services",
+      "local": "Local Service in Al Jahra",
+      "options": "Clear Delivery/Payment Options"
+    },
+    "ctaContact": "Contact Us",
+    "ctaParts": "Browse Spare Parts"
+  },
   "Footer": {
-    "brandDesc": "Ibtikar Al Khaleej for electrical and electronic appliances, spare parts and repair.",
+    "brandDesc": "Ebtikar Al Khaleej for electrical and electronic appliances, spare parts and repair.",
     "quickLinks": "Quick Links",
     "contactInfo": "Contact Info",
     "followUs": "Follow Us",
     "location": "Industrial Area, Al Jahra, Kuwait",
     "phone": "+965 0000 0000",
-    "rights": "© 2026 Ibtikar Al Khaleej. All rights reserved."
+    "rights": "© 2026 Ebtikar Al Khaleej. All rights reserved."
   },
   "SpareParts": {
     "allCategoriesTitle": "Electrical Appliance Spare Parts",
@@ -151,7 +184,7 @@
   },
   "Success": {
     "title": "Your order has been received successfully",
-    "subtitle": "Thank you for ordering from Ibtikar Al Khaleej. We will contact you to confirm your order.",
+    "subtitle": "Thank you for ordering from Ebtikar Al Khaleej. We will contact you to confirm your order.",
     "paymentMethod": "Payment Method",
     "phone": "Phone Number",
     "continueShopping": "Continue Shopping",
@@ -192,7 +225,7 @@
     "submitRequest": "Submit Request",
     "sending": "Sending...",
     "requestSuccessTitle": "Your maintenance request has been submitted",
-    "requestSuccessSubtitle": "Thank you for contacting Ibtikar Al Khaleej. We will contact you to confirm your maintenance request.",
+    "requestSuccessSubtitle": "Thank you for contacting Ebtikar Al Khaleej. We will contact you to confirm your maintenance request.",
     "requestNumber": "Request Number",
     "newRequest": "Submit New Request",
     "errName": "Please enter your name.",
@@ -223,6 +256,8 @@
     "subtitle": "We are here to help. Contact us through the following channels or send us a message.",
     "location": "Location",
     "phoneLabel": "Phone",
+    "whatsappLabel": "WhatsApp",
+    "whatsappChat": "Chat on WhatsApp",
     "emailLabel": "Email",
     "notAvailable": "Not available currently",
     "mapPlaceholder": "Location map will be added soon",

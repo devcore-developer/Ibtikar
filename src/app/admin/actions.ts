@@ -14,7 +14,7 @@ export async function loginAction(email: string, password: string) {
   if (email !== process.env.ADMIN_EMAIL) return false;
   
   // تم وضع الـ Hash مباشرة هنا لتجاوز مشكلة قراءة $ من ملف .env
-  const tempHash = "$2b$10$DRs9hOJnjOzf9FB8vlEXmOyh81SnJOxwyFlS6e1XddGwcS8mcfH72";
+  const tempHash = "$2b$10$h9ZN5nU/ZUbyBeHzt./EUeRngJnYwnXtKToxO7kIcUJaWxOnbOZmu";
   const isValid = await bcrypt.compare(password, tempHash);
   
   if (!isValid) return false;

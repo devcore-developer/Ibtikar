@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!tech) return {};
   const isAr = locale === "ar";
   return {
-    title: isAr ? `${tech.nameAr} | ابتكار الخليج` : `${tech.nameEn} | Ibtikar Al Khaleej`,
+    title: isAr ? `${tech.nameAr} | ابتكار الخليج` : `${tech.nameEn} | Ebtikar Al Khaleej`,
   };
 }
 

@@ -1,59 +1,58 @@
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
-import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { useTranslations, useLocale } from "next-intl";
-import { MapPin, Phone, Mail, MessageCircle } from "lucide-react";
-import { COMPANY_INFO } from "@/config/company";
+import { companyInfo, getWhatsAppLink } from "@/config/company";
+import { Phone, MessageCircle, Mail, MapPin } from "lucide-react";
 
-export const metadata = {
-  title: "تواصل معنا | ابتكار الخليج",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return {
+    title: locale === "ar" ? "تواصل معنا | ابتكار الخليج" : "Contact Us | Ibtikar Al Khaleej",
+  };
+}
 
 export default function ContactPage() {
   const t = useTranslations("Contact");
-  const tNav = useTranslations("Navbar");
   const locale = useLocale();
 
-  const info = [
-    { icon: MapPin, label: t("location"), value: locale === "ar" ? COMPANY_INFO.locationAr : COMPANY_INFO.locationEn },
-    { icon: Phone, label: t("phoneLabel"), value: COMPANY_INFO.phone || t("notAvailable") },
-    { icon: MessageCircle, label: "WhatsApp", value: COMPANY_INFO.whatsapp || t("notAvailable") },
-    { icon: Mail, label: t("emailLabel"), value: COMPANY_INFO.email || t("notAvailable") },
+  const contactCards = [
+    { icon: Phone, label: t("phone"), value: companyInfo.phone, href: `tel:${companyInfo.phone}` },
+    { icon: MessageCircle, label: t("whatsapp"), value: companyInfo.phone, href: getWhatsAppLink() },
+    { icon: Mail, label: t("email"), value: companyInfo.email, href: `mailto:${companyInfo.email}` },
+    { icon: MapPin, label: t("address"), value: locale === "ar" ? companyInfo.addressAr : companyInfo.addressEn, href: companyInfo.mapsUrl || "#" },
   ];
 
   return (
     <Container className="py-12 md:py-16">
-      <Breadcrumb items={[{ name: tNav("home"), href: `/${locale}` }, { name: tNav("contact") }]} />
-      
       <div className="text-center mb-12">
-        <Heading level={1} className="mb-2">{t("title")}</Heading>
-        <p className="text-muted max-w-2xl mx-auto">{t("subtitle")}</p>
+        <Heading level={1} className="mb-3">{t("title")}</Heading>
+        <p className="text-muted">{t("subtitle")}</p>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Info Side */}
-        <div className="space-y-4">
-          {info.map((item, idx) => (
-            <div key={idx} className="flex items-start gap-4 bg-surface border border-border p-4 rounded-lg">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                <item.icon size={20} />
+      <div className="grid md:grid-cols-2 gap-12">
+        {/* Contact Info */}
+        <div className="grid sm:grid-cols-2 gap-4">
+          {contactCards.map((c, i) => (
+            <a 
+              key={i} 
+              href={c.href} 
+              target={c.icon === MessageCircle || c.icon === MapPin ? "_blank" : undefined}
+              className="flex items-center gap-4 p-4 border border-border rounded-lg hover:bg-muted/5 transition-colors"
+            >
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <c.icon size={20} />
               </div>
               <div>
-                <h3 className="font-medium text-foreground text-sm">{item.label}</h3>
-                <p className="text-muted text-sm mt-1" dir="auto">{item.value}</p>
+                <p className="text-xs text-muted">{c.label}</p>
+                <p className="font-medium" dir="ltr">{c.value}</p>
               </div>
-            </div>
+            </a>
           ))}
-          
-          {/* Map Placeholder */}
-          <div className="aspect-video bg-muted/5 border border-border rounded-lg flex items-center justify-center text-muted text-sm">
-            {t("mapPlaceholder")}
-          </div>
         </div>
 
-        {/* Form Side */}
-        <div className="lg:col-span-2 bg-surface p-6 md:p-8 border border-border rounded-lg shadow-sm">
+        {/* Contact Form */}
+        <div className="bg-surface border border-border rounded-lg p-6">
           <ContactForm />
         </div>
       </div>
