@@ -13,23 +13,24 @@ export function generateStaticParams() {
   return maintenanceServices.map((s) => ({ slug: s.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { locale: string, slug: string } }) {
-  const service = getServiceBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ locale: string, slug: string }> }) {
+  const { locale, slug } = await params;
+  const service = getServiceBySlug(slug);
   if (!service) return {};
-  const isAr = params.locale === "ar";
+  const isAr = locale === "ar";
   return {
-    title: isAr ? `${service.nameAr} | ابتكار الخليج` : `${service.nameEn} | Ibtikar Al Khaleej`,
+    title: isAr ? `${service.nameAr} | ابتكار الخليج` : `${service.nameEn} | Ibtikar Al Khaleeg`,
   };
 }
 
-export default function ServiceDetailsPage({ params }: { params: { locale: string, slug: string } }) {
+export default async function ServiceDetailsPage({ params }: { params: Promise<{ locale: string, slug: string }> }) {
+  const { locale, slug } = await params;
   const t = useTranslations("Maintenance");
   const tNav = useTranslations("Navbar");
-  const locale = useLocale();
-  const service = getServiceBySlug(params.slug);
+  const service = getServiceBySlug(slug);
   
   if (!service) return notFound();
-  const relatedTechs = getTechniciansByService(params.slug);
+  const relatedTechs = getTechniciansByService(slug);
 
   return (
     <Container className="py-12 md:py-16">

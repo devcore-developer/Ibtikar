@@ -1,5 +1,5 @@
 import { products, getProductBySlug, getRelatedProducts } from "@/data/products";
-import { categories } from "@/data/categories"; // <--- أضف هذا الاستيراد
+import { categories } from "@/data/categories"; 
 import { Container } from "@/components/ui/Container";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ProductGrid } from "@/components/products/ProductGrid";
@@ -12,11 +12,12 @@ export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { locale: string, slug: string } }) {
-  const product = getProductBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ locale: string, slug: string }> }) {
+  const { locale, slug } = await params;
+  const product = getProductBySlug(slug);
   if (!product) return {};
   
-  const isAr = params.locale === "ar";
+  const isAr = locale === "ar";
   const name = isAr ? product.nameAr : product.nameEn;
   return {
     title: `${name} | Ibtikar Al Khaleej`,
@@ -24,12 +25,12 @@ export async function generateMetadata({ params }: { params: { locale: string, s
   };
 }
 
-export default function ProductDetailsPage({ params }: { params: { locale: string, slug: string } }) {
+export default async function ProductDetailsPage({ params }: { params: Promise<{ locale: string, slug: string }> }) {
+  const { locale, slug } = await params;
   const t = useTranslations("SpareParts");
   const tNav = useTranslations("Navbar");
-  const locale = useLocale();
   
-  const product = getProductBySlug(params.slug);
+  const product = getProductBySlug(slug);
   if (!product) return notFound();
 
   const category = categories.find(c => c.id === product.categoryId);

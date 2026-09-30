@@ -12,20 +12,21 @@ export function generateStaticParams() {
   return technicians.map((t) => ({ slug: t.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { locale: string, slug: string } }) {
-  const tech = getTechnicianBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ locale: string, slug: string }> }) {
+  const { locale, slug } = await params;
+  const tech = getTechnicianBySlug(slug);
   if (!tech) return {};
-  const isAr = params.locale === "ar";
+  const isAr = locale === "ar";
   return {
     title: isAr ? `${tech.nameAr} | ابتكار الخليج` : `${tech.nameEn} | Ibtikar Al Khaleej`,
   };
 }
 
-export default function TechnicianProfilePage({ params }: { params: { locale: string, slug: string } }) {
+export default async function TechnicianProfilePage({ params }: { params: Promise<{ locale: string, slug: string }> }) {
+  const { locale, slug } = await params;
   const t = useTranslations("Technicians");
   const tNav = useTranslations("Navbar");
-  const locale = useLocale();
-  const tech = getTechnicianBySlug(params.slug);
+  const tech = getTechnicianBySlug(slug);
   
   if (!tech) return notFound();
 

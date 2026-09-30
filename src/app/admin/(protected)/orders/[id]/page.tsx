@@ -1,9 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { updateOrderStatus } from "@/app/admin/actions";
 
-export default async function AdminOrderDetailsPage({ params }: { params: { id: string } }) {
+export default async function AdminOrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  
   const order = await prisma.order.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { items: true },
   });
 
