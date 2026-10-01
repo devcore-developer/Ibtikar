@@ -4,6 +4,7 @@ import { Inter, Cairo } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { CartProvider } from "@/lib/cart/CartContext"; // تمت إضافة الاستيراد
 
 import "../globals.css";
 import { Navbar } from "@/components/layout/Navbar";
@@ -50,9 +51,11 @@ export default async function LocaleLayout({
     >
       <body className="bg-background text-foreground min-h-screen flex flex-col">
         <NextIntlClientProvider messages={messages}>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <CartProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </CartProvider>
         </NextIntlClientProvider>
       </body>
     </html>
