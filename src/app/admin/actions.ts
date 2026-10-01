@@ -19,7 +19,11 @@ export async function loginAction(email: string, password: string) {
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
   const session = await encrypt({ email: admin.email, expires });
   const cookieStore = await cookies();
-  cookieStore.set("session", session, { expires, httpOnly: true, secure: true });
+  cookieStore.set("session", session, { 
+  expires, 
+  httpOnly: true, 
+  secure: process.env.NODE_ENV === "production" // يعمل كـ HTTPS فقط على Vercel
+});
   return true;
 }
 
