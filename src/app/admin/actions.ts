@@ -3,22 +3,23 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
-import { encrypt } from "@/lib/auth";
+import { encrypt, getSession } from "@/lib/auth";
 import bcrypt from "bcryptjs";
-import { adminStorage } from "@/lib/firebase"; // استيراد Firebase
 
 // ==========================================
 // Auth Actions
 // ==========================================
 export async function loginAction(email: string, password: string) {
-  if (email !== process.env.ADMIN_EMAIL) return false;
-  const tempHash = "$2b$10$DRs9hOJnjOzf9FB8vlEXmOyh81SnJOxwyFlS6e1XddGwcS8mcfH72";
-  const isValid = await bcrypt.compare(password, tempHash);
+  const admin = await prisma.adminUser.findUnique({ where: { email } });
+  if (!admin) return false;
+  
+  const isValid = await bcrypt.compare(password, admin.password);
   if (!isValid) return false;
+
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  const session = await encrypt({ email, expires });
+  const session = await encrypt({ email: admin.email, expires });
   const cookieStore = await cookies();
-  cookieStore.set("session", session, { expires, httpOnly: true });
+  cookieStore.set("session", session, { expires, httpOnly: true, secure: true });
   return true;
 }
 
@@ -34,7 +35,6 @@ export async function uploadImageAction(formData: FormData) {
   const file = formData.get("file") as File;
   if (!file) throw new Error("No file provided");
 
-  // تحويل الملف إلى Base64 (متطلب من واجهة ImgBB API)
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   const base64Image = buffer.toString("base64");
@@ -55,7 +55,6 @@ export async function uploadImageAction(formData: FormData) {
   }
 
   const data = await response.json();
-  // ImgBB يرجع رابط الصورة المباشر هنا
   return data.data.url; 
 }
 
@@ -182,8 +181,58 @@ export async function deleteMessage(id: string) {
 }
 
 // ==========================================
-// Settings Actions
+// Settings Actions (تغيير الإيميل وكلمة المرور)
 // ==========================================
+export async function changeEmail(formData: FormData) {
+  const session = await getSession();
+  if (!session?.email) throw new Error("Not authenticated");
+
+  // تحويل email إلى string صراحة لتجنب خطأ TypeScript
+  const sessionEmail = session.email as string;
+  const currentPassword = formData.get("currentPassword") as string;
+  const newEmail = formData.get("newEmail") as string;
+
+  const admin = await prisma.adminUser.findUnique({ where: { email: sessionEmail } });
+  if (!admin) throw new Error("Admin not found");
+
+  const isValid = await bcrypt.compare(currentPassword, admin.password);
+  if (!isValid) throw new Error("Current password is incorrect");
+
+  const existing = await prisma.adminUser.findUnique({ where: { email: newEmail } });
+  if (existing) throw new Error("Email already in use");
+
+  await prisma.adminUser.update({ where: { id: admin.id }, data: { email: newEmail } });
+  
+  const cookieStore = await cookies();
+  cookieStore.set("session", "", { expires: new Date(0) });
+  
+  return { success: true };
+}
+
+export async function changePassword(formData: FormData) {
+  const session = await getSession();
+  if (!session?.email) throw new Error("Not authenticated");
+
+  // تحويل email إلى string صراحة لتجنب خطأ TypeScript
+  const sessionEmail = session.email as string;
+  const currentPassword = formData.get("currentPassword") as string;
+  const newPassword = formData.get("newPassword") as string;
+
+  const admin = await prisma.adminUser.findUnique({ where: { email: sessionEmail } });
+  if (!admin) throw new Error("Admin not found");
+
+  const isValid = await bcrypt.compare(currentPassword, admin.password);
+  if (!isValid) throw new Error("Current password is incorrect");
+
+  const newHash = await bcrypt.hash(newPassword, 10);
+  await prisma.adminUser.update({ where: { id: admin.id }, data: { password: newHash } });
+
+  const cookieStore = await cookies();
+  cookieStore.set("session", "", { expires: new Date(0) });
+  
+  return { success: true };
+}
+
 export async function updateSettings(formData: FormData) {
   const entries = Array.from(formData.entries());
   for (const [key, value] of entries) {

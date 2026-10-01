@@ -5,6 +5,7 @@ import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ProductListing } from "@/components/products/ProductListing";
 import { notFound } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
+import { Package } from "lucide-react";
 
 export async function generateStaticParams() {
   const cats = await prisma.category.findMany({ select: { slug: true } });
@@ -13,16 +14,15 @@ export async function generateStaticParams() {
 
 export default async function CategoryPage({ params }: { params: Promise<{ locale: string, category: string }> }) {
   const { locale, category } = await params;
-  const cat = await prisma.category.findUnique({ where: { slug: category } });
-  if (!cat) return notFound();
-  const products = await prisma.product.findMany({ where: { categoryId: cat.id, isActive: true } });
-
-  return <CategoryView cat={cat} products={products} locale={locale} />;
-}
-
-function CategoryView({ cat, products, locale }: { cat: any, products: any[], locale: string }) {
   const t = useTranslations("SpareParts");
   const tNav = useTranslations("Navbar");
+  
+  const cat = await prisma.category.findUnique({ where: { slug: category } });
+  
+  // Only 404 if the category ITSELF doesn't exist
+  if (!cat) return notFound();
+
+  const products = await prisma.product.findMany({ where: { categoryId: cat.id, isActive: true } });
 
   return (
     <Container className="py-12 md:py-16">
@@ -31,11 +31,24 @@ function CategoryView({ cat, products, locale }: { cat: any, products: any[], lo
         { name: tNav("parts"), href: `/${locale}/spare-parts` },
         { name: locale === "ar" ? cat.nameAr : cat.nameEn }
       ]} />
+      
       <div className="mb-10 border-b border-border pb-6">
-        <Heading level={1} className="text-3xl md:text-4xl mb-2">{locale === "ar" ? cat.nameAr : cat.nameEn}</Heading>
+        <Heading level={1} className="text-3xl md:text-4xl mb-2">
+          {locale === "ar" ? cat.nameAr : cat.nameEn}
+        </Heading>
         <p className="text-muted">{locale === "ar" ? (cat.descriptionAr || "") : (cat.descriptionEn || "")}</p>
       </div>
-      <ProductListing products={products as any[]} />
+
+      {products.length === 0 ? (
+        <div className="text-center py-20">
+          <Package size={64} className="mx-auto text-muted/20 mb-4" strokeWidth={1} />
+          <p className="text-muted text-lg">
+            {locale === "ar" ? "لا توجد منتجات في هذا التصنيف حاليًا." : "No products are available in this category yet."}
+          </p>
+        </div>
+      ) : (
+        <ProductListing products={products as any[]} />
+      )}
     </Container>
   );
 }
