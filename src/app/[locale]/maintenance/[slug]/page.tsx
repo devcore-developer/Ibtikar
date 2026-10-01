@@ -23,16 +23,20 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function ServiceDetailsPage({ params }: { params: Promise<{ locale: string, slug: string }> }) {
   const { locale, slug } = await params;
-  const t = useTranslations("Maintenance");
-  const tNav = useTranslations("Navbar");
   const service = getServiceBySlug(slug);
-  
   if (!service) return notFound();
   
   const relatedTechs = await prisma.technician.findMany({
     where: { isActive: true, serviceSlugs: { has: slug } },
     take: 4
   });
+
+  return <ServiceDetailsView locale={locale} service={service} relatedTechs={relatedTechs} />;
+}
+
+function ServiceDetailsView({ locale, service, relatedTechs }: { locale: string, service: any, relatedTechs: any[] }) {
+  const t = useTranslations("Maintenance");
+  const tNav = useTranslations("Navbar");
 
   return (
     <Container className="py-12 md:py-16">
@@ -41,7 +45,6 @@ export default async function ServiceDetailsPage({ params }: { params: Promise<{
         { name: tNav("maintenance"), href: `/${locale}/maintenance` },
         { name: locale === "ar" ? service.nameAr : service.nameEn }
       ]} />
-
       <div className="grid md:grid-cols-2 gap-8 mb-16 border-b border-border pb-12">
         <div className="aspect-video bg-muted/5 border border-border rounded-xl flex items-center justify-center">
           <service.icon size={96} className="text-primary/30" strokeWidth={1} />
@@ -54,7 +57,6 @@ export default async function ServiceDetailsPage({ params }: { params: Promise<{
           </Link>
         </div>
       </div>
-
       {relatedTechs.length > 0 && (
         <div>
           <Heading level={2} className="mb-6">{t("relatedTechs")}</Heading>
