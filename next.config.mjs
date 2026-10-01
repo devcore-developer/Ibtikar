@@ -5,12 +5,12 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  images: {
+ images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
+      { protocol: 'https', hostname: 'i.ibb.co' }, // ImgBB
+      { protocol: 'https', hostname: 'res.cloudinary.com' }, // Cloudinary
+      { protocol: 'https', hostname: 'firebasestorage.googleapis.com' }, // Firebase
+      { protocol: 'https', hostname: '**' }, // Wildcard for safety
     ],
   },
   async headers() {

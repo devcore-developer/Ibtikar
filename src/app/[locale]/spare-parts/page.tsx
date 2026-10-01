@@ -1,15 +1,41 @@
-import { categories } from "@/data/categories";
-import { products } from "@/data/products";
+import { prisma } from "@/lib/prisma";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { CategoryCard } from "@/components/categories/CategoryCard";
 import { useTranslations, useLocale } from "next-intl";
 
-export default function SparePartsPage() {
+export default async function SparePartsPage() {
   const t = useTranslations("SpareParts");
   const tNav = useTranslations("Navbar");
   const locale = useLocale();
+
+  const categoriesRaw = await prisma.category.findMany({ where: { isActive: true } });
+  // أضفنا include: { category: true } لكي نتمكن من قراءة slug التصنف
+  const productsRaw = await prisma.product.findMany({ 
+    where: { isActive: true },
+    include: { category: true } 
+  });
+
+  // تنظيف البيانات لمنع null وتوافق الأنواع
+  const categories = categoriesRaw.map(c => ({ 
+    ...c, 
+    icon: (c as any).icon || null,
+    descriptionAr: c.descriptionAr || "",
+    descriptionEn: c.descriptionEn || ""
+  }));
+  
+  const products = productsRaw.map(p => ({ 
+    ...p,
+    descriptionAr: p.descriptionAr || "",
+    descriptionEn: p.descriptionEn || "",
+    shortDescriptionAr: p.shortDescriptionAr || "",
+    shortDescriptionEn: p.shortDescriptionEn || "",
+    partNumber: p.partNumber || "",
+    brand: p.brand || "",
+    categorySlug: p.category?.slug || "",
+    images: []
+  }));
 
   return (
     <Container className="py-12 md:py-16">

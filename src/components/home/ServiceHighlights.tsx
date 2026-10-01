@@ -1,7 +1,15 @@
 import { useTranslations } from "next-intl";
 import { Container } from "@/components/ui/Container";
-import { highlights } from "@/data/home";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Package, Wrench, Truck, ShieldCheck } from "lucide-react";
+
+// تعريف محلي للعناصر
+const highlights = [
+  { id: "parts", icon: Package },
+  { id: "maintenance", icon: Wrench },
+  { id: "delivery", icon: Truck },
+  { id: "trusted", icon: ShieldCheck }
+];
 
 export function ServiceHighlights() {
   const t = useTranslations("Home");

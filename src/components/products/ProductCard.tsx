@@ -1,58 +1,73 @@
 "use client";
 
 import Link from "next/link";
-import { Product } from "@/types/product";
-import { Card, CardContent, CardFooter } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { formatPrice } from "@/lib/format";
-import { useLocale, useTranslations } from "next-intl";
-import { Package } from "lucide-react";
+import Image from "next/image";
+import { useTranslations, useLocale } from "next-intl";
 import { useCart } from "@/lib/cart/CartContext";
+import { formatCurrency } from "@/lib/format";
+import { ShoppingCart, Package } from "lucide-react";
 
-export function ProductCard({ product }: { product: Product }) {
-  const locale = useLocale();
+export function ProductCard({ product }: { product: any }) {
   const t = useTranslations("SpareParts");
-  const { addItem } = useCart();
+  const locale = useLocale();
+  const { addItem } = useCart(); // استخدام addItem بدلاً من addToCart
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // تمرير البيانات بالشكل الذي يتوقعه CartItem بناءً على ملف types/cart.ts
     addItem({
       productId: product.id,
       slug: product.slug,
       nameAr: product.nameAr,
       nameEn: product.nameEn,
       price: product.price,
-      quantity: 1,
+      image: product.image || "",
+      quantity: 1
     });
-    alert(locale === "ar" ? "تمت إضافة المنتج إلى السلة" : "Product added to cart");
   };
 
   return (
-    <Card className="flex flex-col group h-full">
-      <Link href={`/${locale}/product/${product.slug}`} className="block">
-        <div className="aspect-square bg-muted/5 flex items-center justify-center border-b border-border p-6 overflow-hidden">
-          <Package size={64} className="text-muted/30 group-hover:text-primary/50 transition-colors" strokeWidth={1} />
-        </div>
-      </Link>
-      <CardContent className="p-4 flex-1 flex flex-col">
-        <span className="text-xs font-medium text-accent uppercase tracking-wider mb-1 block">
-          {locale === "ar" ? product.shortDescriptionAr : product.shortDescriptionEn}
+    <Link 
+      href={`/${locale}/product/${product.slug}`} 
+      className="flex flex-col group bg-white border border-[#E8ECEE]/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden rounded-lg"
+    >
+      <div className="relative aspect-[4/3] bg-[#F6F8F9] flex items-center justify-center p-6 overflow-hidden">
+        {product.image ? (
+          <Image 
+            src={product.image} 
+            alt={locale === "ar" ? product.nameAr : product.nameEn}
+            fill
+            className="object-contain group-hover:scale-105 transition-transform duration-300"
+            sizes="(max-width: 768px) 100vw, 25vw"
+          />
+        ) : (
+          <Package className="w-20 h-20 text-muted/20" strokeWidth={1} />
+        )}
+      </div>
+
+      <div className="p-4 flex flex-col flex-1">
+        <span className="text-xs font-semibold text-[#F6A623] uppercase tracking-wider mb-1 block">
+          {locale === "ar" ? product.category?.nameAr : product.category?.nameEn}
         </span>
-        <Link href={`/${locale}/product/${product.slug}`}>
-          <h3 className="font-semibold text-foreground text-sm md:text-base line-clamp-2 mb-2 hover:text-primary transition-colors">
-            {locale === "ar" ? product.nameAr : product.nameEn}
-          </h3>
-        </Link>
-        <p className="text-lg font-bold text-primary mt-auto mb-4">
-          {formatPrice(product.price, locale)}
+        <h3 className="text-sm font-bold text-[#075F64] mb-3 line-clamp-2 flex-1">
+          {locale === "ar" ? product.nameAr : product.nameEn}
+        </h3>
+        <p className="text-lg font-extrabold text-[#086B70] mb-4">
+          {formatCurrency(product.price, locale)}
         </p>
-      </CardContent>
-      <CardFooter className="p-4 pt-0">
-        <Button variant="primary" size="sm" className="w-full" onClick={handleAddToCart}>
+      </div>
+
+      <div className="p-4 pt-0">
+        <button 
+          onClick={handleAddToCart}
+          className="w-full h-11 bg-[#086B70] text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[#075F64] transition-colors duration-300 shadow-sm"
+        >
+          <ShoppingCart size={18} strokeWidth={2} />
           {t("addToCart")}
-        </Button>
-      </CardFooter>
-    </Card>
+        </button>
+      </div>
+    </Link>
   );
 }

@@ -1,18 +1,29 @@
+import { prisma } from "@/lib/prisma";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { TechnicianCard } from "@/components/technicians/TechnicianCard";
-import { technicians } from "@/data/technicians";
 import { useTranslations, useLocale } from "next-intl";
 
 export const metadata = {
   title: "فريق الصيانة | ابتكار الخليج",
 };
 
-export default function TechniciansPage() {
+export default async function TechniciansPage() {
   const t = useTranslations("Technicians");
   const tNav = useTranslations("Navbar");
   const locale = useLocale();
+
+  const techsRaw = await prisma.technician.findMany({ where: { isActive: true } });
+
+  // تنظيف البيانات لمنع null
+  const technicians = techsRaw.map(t => ({
+    ...t,
+    bioAr: t.bioAr || "",
+    bioEn: t.bioEn || "",
+    phone: t.phone || "",
+    experience: t.experience || ""
+  }));
 
   return (
     <Container className="py-12 md:py-16">
@@ -24,7 +35,7 @@ export default function TechniciansPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {technicians.map(tech => <TechnicianCard key={tech.id} technician={tech} />)}
+        {technicians.map((tech) => <TechnicianCard key={tech.id} technician={tech} />)}
       </div>
     </Container>
   );

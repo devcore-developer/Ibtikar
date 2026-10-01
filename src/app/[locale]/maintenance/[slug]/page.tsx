@@ -2,14 +2,14 @@ import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Button } from "@/components/ui/Button";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { maintenanceServices, getServiceBySlug } from "@/data/maintenance-services";
-import { getTechniciansByService } from "@/data/technicians";
 import { TechnicianCard } from "@/components/technicians/TechnicianCard";
 import { notFound } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
+import { maintenanceServices, getServiceBySlug } from "@/data/maintenance-services";
+import { prisma } from "@/lib/prisma";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   return maintenanceServices.map((s) => ({ slug: s.slug }));
 }
 
@@ -18,9 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const service = getServiceBySlug(slug);
   if (!service) return {};
   const isAr = locale === "ar";
-  return {
-    title: isAr ? `${service.nameAr} | ابتكار الخليج` : `${service.nameEn} | Ebtikar Al Khaleeg`,
-  };
+  return { title: isAr ? `${service.nameAr} | ابتكار الخليج` : `${service.nameEn} | Ibtikar Al Khaleej` };
 }
 
 export default async function ServiceDetailsPage({ params }: { params: Promise<{ locale: string, slug: string }> }) {
@@ -30,7 +28,11 @@ export default async function ServiceDetailsPage({ params }: { params: Promise<{
   const service = getServiceBySlug(slug);
   
   if (!service) return notFound();
-  const relatedTechs = getTechniciansByService(slug);
+  
+  const relatedTechs = await prisma.technician.findMany({
+    where: { isActive: true, serviceSlugs: { has: slug } },
+    take: 4
+  });
 
   return (
     <Container className="py-12 md:py-16">
@@ -57,7 +59,7 @@ export default async function ServiceDetailsPage({ params }: { params: Promise<{
         <div>
           <Heading level={2} className="mb-6">{t("relatedTechs")}</Heading>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedTechs.map(t => <TechnicianCard key={t.id} technician={t} />)}
+            {relatedTechs.map(t => <TechnicianCard key={t.id} technician={t as any} />)}
           </div>
         </div>
       )}

@@ -1,20 +1,21 @@
+import { prisma } from "@/lib/prisma";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Button } from "@/components/ui/Button";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { technicians, getTechnicianBySlug } from "@/data/technicians";
 import { notFound } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { UserCircle, Phone, Wrench, Briefcase } from "lucide-react";
 import Link from "next/link";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const technicians = await prisma.technician.findMany({ select: { slug: true } });
   return technicians.map((t) => ({ slug: t.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string, slug: string }> }) {
   const { locale, slug } = await params;
-  const tech = getTechnicianBySlug(slug);
+  const tech = await prisma.technician.findUnique({ where: { slug } });
   if (!tech) return {};
   const isAr = locale === "ar";
   return {
@@ -26,7 +27,8 @@ export default async function TechnicianProfilePage({ params }: { params: Promis
   const { locale, slug } = await params;
   const t = useTranslations("Technicians");
   const tNav = useTranslations("Navbar");
-  const tech = getTechnicianBySlug(slug);
+  
+  const tech = await prisma.technician.findUnique({ where: { slug } });
   
   if (!tech) return notFound();
 

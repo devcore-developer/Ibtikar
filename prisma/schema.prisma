@@ -37,6 +37,7 @@ model Product {
   price              Float
   partNumber         String?
   brand              String?
+  image              String?
   isActive           Boolean  @default(true)
   categoryId         String
   category           Category @relation(fields: [categoryId], references: [id])
@@ -82,6 +83,7 @@ model Technician {
   bioEn        String?
   phone        String?
   experience   String?
+  image        String?
   serviceSlugs String[]
   isActive     Boolean  @default(true)
 }

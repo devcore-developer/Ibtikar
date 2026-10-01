@@ -1,37 +1,25 @@
-import { categories } from "@/data/categories";
-import { getProductsByCategory } from "@/data/products";
+import { prisma } from "@/lib/prisma";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ProductListing } from "@/components/products/ProductListing";
 import { notFound } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
-export function generateStaticParams() {
-  return categories.map((cat) => ({ category: cat.slug }));
-}
-
-export async function generateMetadata({ params }: { params: Promise<{ locale: string, category: string }> }) {
-  const { locale, category } = await params;
-  const cat = categories.find(c => c.slug === category);
-  if (!cat) return {};
-  
-  const isAr = locale === "ar";
-  return {
-    title: isAr ? `${cat.nameAr} | ابتكار الخليج` : `${cat.nameEn} | Ebtikar Al Khaleej`,
-    description: isAr ? `تصفح ${cat.nameAr} المتوفرة لدى ابتكار الخليج في الجهراء، الكويت.` : `Browse ${cat.nameEn} available at Ebtikar Al Khaleej in Al Jahra, Kuwait.`
-  };
+export async function generateStaticParams() {
+  const cats = await prisma.category.findMany({ select: { slug: true } });
+  return cats.map((cat) => ({ category: cat.slug }));
 }
 
 export default async function CategoryPage({ params }: { params: Promise<{ locale: string, category: string }> }) {
   const { locale, category } = await params;
   const t = useTranslations("SpareParts");
   const tNav = useTranslations("Navbar");
-  const cat = categories.find(c => c.slug === category);
   
+  const cat = await prisma.category.findUnique({ where: { slug: category } });
   if (!cat) return notFound();
 
-  const products = getProductsByCategory(category);
+  const products = await prisma.product.findMany({ where: { categoryId: cat.id, isActive: true } });
 
   return (
     <Container className="py-12 md:py-16">
@@ -42,14 +30,13 @@ export default async function CategoryPage({ params }: { params: Promise<{ local
       ]} />
       
       <div className="mb-10 border-b border-border pb-6">
-        <Heading level={1} className="text-3xl md:text-4xl mb-2 flex items-center gap-3">
-          <cat.icon className="text-primary" size={32} strokeWidth={1.5} />
+        <Heading level={1} className="text-3xl md:text-4xl mb-2">
           {locale === "ar" ? cat.nameAr : cat.nameEn}
         </Heading>
-        <p className="text-muted">{locale === "ar" ? cat.descriptionAr : cat.descriptionEn}</p>
+        <p className="text-muted">{locale === "ar" ? (cat.descriptionAr || "") : (cat.descriptionEn || "")}</p>
       </div>
 
-      <ProductListing products={products} />
+      <ProductListing products={products as any[]} />
     </Container>
   );
 }

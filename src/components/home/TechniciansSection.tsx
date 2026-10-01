@@ -3,11 +3,10 @@ import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Card, CardContent, CardFooter } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { technicians } from "@/data/home";
 import { UserCircle, Phone } from "lucide-react";
 import Link from "next/link";
 
-export function TechniciansSection() {
+export function TechniciansSection({ technicians }: { technicians: any[] }) {
   const t = useTranslations("Home");
   const locale = useLocale();
 
@@ -19,12 +18,13 @@ export function TechniciansSection() {
             <Heading level={2} className="mb-2">{t("techTitle")}</Heading>
             <p className="text-muted">{t("techSubtitle")}</p>
           </div>
-          <Button variant="ghost" className="text-primary border border-border">
-            {t("viewAllTechs")}
-          </Button>
+          <Link href={`/${locale}/technicians`}>
+            <Button variant="ghost" className="text-primary border border-border">
+              {t("viewAllTechs")}
+            </Button>
+          </Link>
         </div>
         
-        {/* تم تصحيح التجاوب هنا: عمود على الجوال، عمودين على التابلت، 4 على الديسكتوب */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {technicians.map((tech) => (
             <Card key={tech.id} className="text-center group h-full flex flex-col">
@@ -39,7 +39,7 @@ export function TechniciansSection() {
                   {locale === "ar" ? tech.specialtyAr : tech.specialtyEn}
                 </span>
                 <p className="text-muted text-sm leading-relaxed line-clamp-3">
-                  {locale === "ar" ? tech.descAr : tech.descEn}
+                  {locale === "ar" ? (tech.bioAr || "") : (tech.bioEn || "")}
                 </p>
               </CardContent>
               <CardFooter className="p-4 pt-0 flex justify-center">

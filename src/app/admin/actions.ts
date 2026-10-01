@@ -5,23 +5,18 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { encrypt } from "@/lib/auth";
 import bcrypt from "bcryptjs";
+import { adminStorage } from "@/lib/firebase"; // استيراد Firebase
 
 // ==========================================
-// Authentication Actions (تسجيل الدخول والخروج)
+// Auth Actions
 // ==========================================
-
 export async function loginAction(email: string, password: string) {
   if (email !== process.env.ADMIN_EMAIL) return false;
-  
-  // تم وضع الـ Hash مباشرة هنا لتجاوز مشكلة قراءة $ من ملف .env
-  const tempHash = "$2b$10$h9ZN5nU/ZUbyBeHzt./EUeRngJnYwnXtKToxO7kIcUJaWxOnbOZmu";
+  const tempHash = "$2b$10$DRs9hOJnjOzf9FB8vlEXmOyh81SnJOxwyFlS6e1XddGwcS8mcfH72";
   const isValid = await bcrypt.compare(password, tempHash);
-  
   if (!isValid) return false;
-
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
   const session = await encrypt({ email, expires });
-  
   const cookieStore = await cookies();
   cookieStore.set("session", session, { expires, httpOnly: true });
   return true;
@@ -33,9 +28,40 @@ export async function logoutAction() {
 }
 
 // ==========================================
-// Product Actions (إدارة المنتجات)
+// Upload Action (ImgBB)
 // ==========================================
+export async function uploadImageAction(formData: FormData) {
+  const file = formData.get("file") as File;
+  if (!file) throw new Error("No file provided");
 
+  // تحويل الملف إلى Base64 (متطلب من واجهة ImgBB API)
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  const base64Image = buffer.toString("base64");
+
+  const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_API_KEY}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      image: base64Image,
+    }),
+  });
+
+  if (!response.ok) {
+    console.error("ImgBB upload error:", await response.text());
+    throw new Error("Failed to upload image to ImgBB");
+  }
+
+  const data = await response.json();
+  // ImgBB يرجع رابط الصورة المباشر هنا
+  return data.data.url; 
+}
+
+// ==========================================
+// Product Actions
+// ==========================================
 export async function createProduct(formData: FormData) {
   await prisma.product.create({
     data: {
@@ -48,25 +74,84 @@ export async function createProduct(formData: FormData) {
       categoryId: formData.get("categoryId") as string,
       partNumber: formData.get("partNumber") as string || null,
       brand: formData.get("brand") as string || null,
+      image: formData.get("image") as string || null,
     },
   });
   revalidatePath("/admin/products");
+  revalidatePath("/[locale]", "page");
+  revalidatePath("/[locale]/spare-parts", "page");
 }
 
-export async function toggleProductStatus(id: string, isActive: boolean) {
-  await prisma.product.update({ where: { id }, data: { isActive: !isActive } });
+export async function toggleProductStatus(formData: FormData) {
+  const id = formData.get("id") as string;
+  const product = await prisma.product.findUnique({ where: { id } });
+  if (product) {
+    await prisma.product.update({ where: { id }, data: { isActive: !product.isActive } });
+  }
   revalidatePath("/admin/products");
 }
 
-export async function deleteProduct(id: string) {
+export async function deleteProduct(formData: FormData) {
+  const id = formData.get("id") as string;
   await prisma.product.delete({ where: { id } });
   revalidatePath("/admin/products");
 }
 
 // ==========================================
-// Order Actions (إدارة الطلبات)
+// Category Actions
 // ==========================================
+export async function createCategory(formData: FormData) {
+  try {
+    await prisma.category.create({
+      data: {
+        nameAr: formData.get("nameAr") as string,
+        nameEn: formData.get("nameEn") as string,
+        slug: formData.get("slug") as string,
+        descriptionAr: formData.get("descriptionAr") as string || null,
+        descriptionEn: formData.get("descriptionEn") as string || null,
+      },
+    });
+    revalidatePath("/admin/categories");
+    revalidatePath("/admin/products/new");
+    revalidatePath("/[locale]/spare-parts", "page");
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: "Failed to create category." };
+  }
+}
 
+// ==========================================
+// Technician Actions
+// ==========================================
+export async function createTechnician(formData: FormData) {
+  try {
+    const serviceSlugs = (formData.get("serviceSlugs") as string).split(",").map(s => s.trim()).filter(Boolean);
+    await prisma.technician.create({
+      data: {
+        nameAr: formData.get("nameAr") as string,
+        nameEn: formData.get("nameEn") as string,
+        slug: formData.get("slug") as string,
+        specialtyAr: formData.get("specialtyAr") as string,
+        specialtyEn: formData.get("specialtyEn") as string,
+        experience: formData.get("experience") as string || null,
+        phone: formData.get("phone") as string || null,
+        bioAr: formData.get("bioAr") as string || null,
+        bioEn: formData.get("bioEn") as string || null,
+        serviceSlugs,
+        image: formData.get("image") as string || null,
+      },
+    });
+    revalidatePath("/admin/technicians");
+    revalidatePath("/[locale]/technicians", "page");
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: "Failed to create technician." };
+  }
+}
+
+// ==========================================
+// Order Actions
+// ==========================================
 export async function updateOrderStatus(formData: FormData) {
   const id = formData.get("id") as string;
   const status = formData.get("status") as string;
@@ -76,18 +161,16 @@ export async function updateOrderStatus(formData: FormData) {
 }
 
 // ==========================================
-// Maintenance Actions (إدارة طلبات الصيانة)
+// Maintenance Actions
 // ==========================================
-
 export async function updateMaintenanceStatus(id: string, status: string) {
   await prisma.maintenanceRequest.update({ where: { id }, data: { status } });
   revalidatePath("/admin/maintenance");
 }
 
 // ==========================================
-// Messages Actions (إدارة الرسائل)
+// Messages Actions
 // ==========================================
-
 export async function markMessageRead(id: string, isRead: boolean) {
   await prisma.contactMessage.update({ where: { id }, data: { isRead } });
   revalidatePath("/admin/messages");
@@ -99,9 +182,8 @@ export async function deleteMessage(id: string) {
 }
 
 // ==========================================
-// Settings Actions (إدارة الإعدادات)
+// Settings Actions
 // ==========================================
-
 export async function updateSettings(formData: FormData) {
   const entries = Array.from(formData.entries());
   for (const [key, value] of entries) {
@@ -112,5 +194,5 @@ export async function updateSettings(formData: FormData) {
     });
   }
   revalidatePath("/admin/settings");
-  revalidatePath("/"); // Refresh public site
+  revalidatePath("/");
 }
