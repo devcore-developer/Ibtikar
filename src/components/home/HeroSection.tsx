@@ -3,6 +3,7 @@
 import { useTranslations, useLocale } from "next-intl";
 import { Refrigerator, WashingMachine, Wind, Wrench, CheckCircle, ArrowLeft, ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
+import Link from "next/link";
 
 export function HeroSection() {
   const t = useTranslations("Hero");
@@ -17,9 +18,8 @@ export function HeroSection() {
   ];
 
   return (
-    // تمت إضافة كلاس hero-section
     <section className="hero-section relative bg-[#FAFCFC] overflow-hidden">
-      <Container className="pt-8 md:pt-10 pb-8 md:pb-8 relative z-10">
+      <Container className="pt-10 md:pt-12 pb-8 md:pb-12 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
           
           {/* RIGHT SIDE - Text Content */}
@@ -36,15 +36,15 @@ export function HeroSection() {
               {t("subtitle")}
             </p>
 
-            {/* تمت إضافة كلاس hero-buttons */}
+            {/* Fixed CTAs to use Link */}
             <div className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
-              <button className="h-12 px-7 bg-[#086B70] text-white rounded-xl font-semibold hover:bg-[#075F64] transition-colors duration-300 flex items-center justify-center gap-2 shadow-lg shadow-[#086B70]/20">
+              <Link href={`/${locale}/maintenance`} className="h-12 px-7 bg-[#086B70] text-white rounded-xl font-semibold hover:bg-[#075F64] transition-colors duration-300 flex items-center justify-center gap-2 shadow-lg shadow-[#086B70]/20">
                 {t("primaryBtn")}
                 <ArrowIcon size={18} />
-              </button>
-              <button className="h-12 px-7 bg-white border border-[#086B70] text-[#086B70] rounded-xl font-semibold hover:bg-[#EAF5F5] transition-colors duration-300">
+              </Link>
+              <Link href={`/${locale}/maintenance/request`} className="h-12 px-7 bg-white border border-[#086B70] text-[#086B70] rounded-xl font-semibold hover:bg-[#EAF5F5] transition-colors duration-300 flex items-center justify-center">
                 {t("secondaryBtn")}
-              </button>
+              </Link>
             </div>
 
             <div className="flex flex-wrap gap-6 justify-center lg:justify-start text-sm font-medium text-[#075F64]">

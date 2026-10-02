@@ -305,12 +305,15 @@ export async function updateMaintenanceStatus(id: string, status: string) {
 // ==========================================
 // Messages Actions
 // ==========================================
-export async function markMessageRead(id: string, isRead: boolean) {
+export async function markMessageRead(formData: FormData) {
+  const id = formData.get("id") as string;
+  const isRead = formData.get("isRead") === "true";
   await prisma.contactMessage.update({ where: { id }, data: { isRead } });
   revalidatePath("/admin/messages");
 }
 
-export async function deleteMessage(id: string) {
+export async function deleteMessage(formData: FormData) {
+  const id = formData.get("id") as string;
   await prisma.contactMessage.delete({ where: { id } });
   revalidatePath("/admin/messages");
 }
@@ -378,4 +381,43 @@ export async function updateSettings(formData: FormData) {
   revalidatePath("/admin/settings");
   revalidatePath("/[locale]/checkout", "page");
   revalidatePath("/");
+}
+
+// ==========================================
+// Public Form Actions (حفظ طلبات الصيانة والرسائل)
+// ==========================================
+export async function createMaintenanceRequest(formData: FormData) {
+  await prisma.maintenanceRequest.create({
+    data: {
+      customerName: formData.get("name") as string,
+      phone: formData.get("phone") as string,
+      area: formData.get("area") as string || "N/A",
+      address: formData.get("address") as string || "N/A",
+      applianceType: formData.get("applianceType") as string,
+      serviceId: formData.get("serviceRequired") as string,
+      brand: formData.get("brand") as string || null,
+      model: formData.get("model") as string || null,
+      problemDescription: formData.get("problemDescription") as string || null,
+      preferredContactTime: formData.get("preferredTime") as string || null,
+      notes: formData.get("notes") as string || null,
+      status: "PENDING",
+    },
+  });
+  revalidatePath("/admin/maintenance");
+  return { success: true };
+}
+
+export async function createContactMessage(formData: FormData) {
+  await prisma.contactMessage.create({
+    data: {
+      name: formData.get("name") as string,
+      phone: formData.get("phone") as string,
+      email: formData.get("email") as string || null,
+      subject: formData.get("subject") as string || null,
+      message: formData.get("message") as string,
+      isRead: false,
+    },
+  });
+  revalidatePath("/admin/messages");
+  return { success: true };
 }

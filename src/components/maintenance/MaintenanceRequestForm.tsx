@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { CheckCircle } from "lucide-react";
-import { MaintenanceRequest } from "@/types/maintenance";
 import { maintenanceServices } from "@/data/maintenance-services";
+import { createMaintenanceRequest } from "@/app/admin/actions"; // تم استيراد دالة الحفظ
 
 export function MaintenanceRequestForm() {
   const t = useTranslations("Maintenance");
@@ -17,12 +17,12 @@ export function MaintenanceRequestForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [requestId, setRequestId] = useState("");
 
   const validate = () => {
     const err: Record<string, string> = {};
     if (!formData.name.trim()) err.name = t("errName");
-    if (!formData.phone.match(/^(\+?965|0)?(5[0-9]|6[0-9]|9[0-9])\d{6}$/)) err.phone = t("errPhone");
+    // تم إزالة التحقق من صيغة رقم الهاتف الكويتي، نتحقق فقط إن كان الحقل فارغاً
+    if (!formData.phone.trim()) err.phone = "يرجى إدخال رقم الهاتف.";
     if (!formData.address.trim()) err.address = t("errAddress");
     if (!formData.applianceType.trim()) err.applianceType = t("errAppliance");
     if (!formData.serviceId) err.serviceId = t("errService");
@@ -34,28 +34,10 @@ export function MaintenanceRequestForm() {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1000));
     
-    const id = `MR-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${Math.random().toString(36).substring(2, 4).toUpperCase()}`;
-    setRequestId(id);
-    
-    const req: MaintenanceRequest = {
-      id,
-      customerName: formData.name,
-      phone: formData.phone,
-      area: formData.area || "N/A",
-      address: formData.address,
-      applianceType: formData.applianceType,
-      serviceId: formData.serviceId,
-      brand: formData.brand,
-      model: formData.model,
-      problemDescription: formData.problemDescription,
-      preferredContactTime: formData.preferredContactTime,
-      notes: formData.notes,
-      status: "PENDING",
-      createdAt: new Date().toISOString()
-    };
-    console.log("Maintenance Request Saved:", req);
+    // إرسال البيانات للسيرفر لحفظها في قاعدة البيانات
+    const formDataObj = new FormData(e.currentTarget as HTMLFormElement);
+    await createMaintenanceRequest(formDataObj);
     
     setLoading(false);
     setSuccess(true);
@@ -69,7 +51,6 @@ export function MaintenanceRequestForm() {
         </div>
         <h3 className="text-xl font-bold text-foreground mb-2">{t("requestSuccessTitle")}</h3>
         <p className="text-muted mb-4">{t("requestSuccessSubtitle")}</p>
-        <p className="text-primary font-bold text-lg mb-6">{t("requestNumber")}: {requestId}</p>
         <Button onClick={() => window.location.reload()} variant="outline">{t("newRequest")}</Button>
       </div>
     );

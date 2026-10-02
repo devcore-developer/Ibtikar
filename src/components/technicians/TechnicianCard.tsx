@@ -10,6 +10,15 @@ export function TechnicianCard({ technician }: { technician: any }) {
   const t = useTranslations("Technicians");
   const locale = useLocale();
 
+  // دالة لفتح رقم الهاتف برمجياً لتجنب وضع <a> داخل <a>
+  const handleCall = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (technician.phone) {
+      window.location.href = `tel:${technician.phone}`;
+    }
+  };
+
   return (
     <Link href={`/${locale}/technicians/${technician.slug}`} className="block h-full hover:-translate-y-1 transition-transform duration-300">
       <Card className="text-center group h-full flex flex-col overflow-hidden">
@@ -39,19 +48,19 @@ export function TechnicianCard({ technician }: { technician: any }) {
           )}
         </CardContent>
         
-        {/* زر الاتصال - تم إضافة stopPropagation لمنع فتح صفحة الفني عند الضغط على الاتصال */}
+        {/* زر الاتصال - تم تغييره إلى Button لتجنب أخطاء HTML Nesting */}
         <div className="p-4 pt-0 flex justify-center w-full">
           {technician.phone ? (
-            <a 
-              href={`tel:${technician.phone}`} 
-              className="w-full" 
-              onClick={(e) => e.stopPropagation()}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full gap-2" 
+              onClick={handleCall}
+              type="button"
             >
-              <Button variant="outline" size="sm" className="w-full gap-2">
-                <Phone size={14} />
-                {t("techCall")}
-              </Button>
-            </a>
+              <Phone size={14} />
+              {t("techCall")}
+            </Button>
           ) : (
             <Button variant="outline" size="sm" className="w-full gap-2" disabled>
               <Phone size={14} />

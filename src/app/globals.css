@@ -230,3 +230,27 @@ body {
     min-width: 600px !important; /* منع ضغط الأعمدة بشكل مفرط */
   }
 }
+/* ==========================================
+   ADMIN MOBILE TABLES FIX (Max 767px)
+   ========================================== */
+@media (max-width: 767px) {
+  /* منع التمرير الأفقي تماماً */
+  main .overflow-x-auto {
+    overflow-x: hidden !important;
+  }
+  
+  /* إجبار الجدول على أخذ عرض الشاشة بالكامل */
+  main table {
+    width: 100% !important;
+    table-layout: auto !important;
+  }
+  
+  /* السماح للنصوص بالالتفاف للأسفل بدلاً من التمدد جانباً */
+  main th, main td {
+    padding: 6px 4px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    font-size: 11px !important;
+    max-width: 120px !important; /* لمنع عمود واحد من أخذ كل المساحة */
+  }
+}

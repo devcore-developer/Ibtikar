@@ -1,58 +1,49 @@
 import { prisma } from "@/lib/prisma";
-import Link from "next/link";
+import { AdminCard, AdminCardHeader, EmptyState } from "@/components/admin/ui";
 import { deleteMessage, markMessageRead } from "@/app/admin/actions";
+import { Mail } from "lucide-react";
 
-export default async function AdminMessagesPage() {
+export default async function MessagesPage() {
   const messages = await prisma.contactMessage.findMany({ orderBy: { createdAt: "desc" } });
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-foreground mb-8">الرسائل الواردة</h1>
-
-      <div className="bg-surface border border-border rounded-lg overflow-hidden">
-        <table className="w-full text-start">
-          <thead className="bg-muted/5 border-b border-border">
-            <tr>
-              <th className="p-4 text-start text-sm font-medium text-muted">المرسل</th>
-              <th className="p-4 text-start text-sm font-medium text-muted">الهاتف</th>
-              <th className="p-4 text-start text-sm font-medium text-muted">الموضوع</th>
-              <th className="p-4 text-start text-sm font-medium text-muted">الحالة</th>
-              <th className="p-4 text-start text-sm font-medium text-muted">التاريخ</th>
-              <th className="p-4 text-start text-sm font-medium text-muted">إجراءات</th>
-            </tr>
-          </thead>
-          <tbody>
-            {messages.map((m: any) => (
-              <tr key={m.id} className={`border-b border-border last:border-0 hover:bg-muted/5 ${!m.isRead ? "bg-primary/5" : ""}`}>
-                <td className="p-4 text-sm font-medium text-foreground">{m.name}</td>
-                <td className="p-4 text-sm text-muted" dir="ltr">{m.phone}</td>
-                <td className="p-4 text-sm text-muted">{m.subject || "-"}</td>
-                <td className="p-4">
-                  <span className={`px-2 py-1 text-xs rounded-full ${m.isRead ? "bg-muted/10 text-muted" : "bg-accent/10 text-accent"}`}>
-                    {m.isRead ? "مقروءة" : "جديدة"}
-                  </span>
-                </td>
-                <td className="p-4 text-sm text-muted">{new Date(m.createdAt).toLocaleDateString("ar-KW")}</td>
-                <td className="p-4">
-                  <div className="flex gap-2">
-                    <form action={() => markMessageRead(m.id, m.isRead)}>
-                      <button type="submit" className="p-2 text-muted hover:text-primary" title={m.isRead ? "وضع كغير مقروءة" : "وضع كمقروءة"}>
-                        {/* يمكنك استخدام أيقونة مناسبة هنا */}
-                        ✓
-                      </button>
-                    </form>
-                    <form action={() => deleteMessage(m.id)}>
-                      <button type="submit" className="p-2 text-muted hover:text-error" title="حذف">
-                        ✕
-                      </button>
-                    </form>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">الرسائل</h1>
+      <AdminCard>
+        <AdminCardHeader title="صندوق الوارد" />
+        {messages.length === 0 ? (
+          <EmptyState title="لا توجد رسائل حالياً" icon={Mail} />
+        ) : (
+          <div className="divide-y divide-[#E8ECEE]">
+            {messages.map((msg) => (
+              <div key={msg.id} className={`p-5 ${msg.isRead ? "bg-white" : "bg-blue-50/50"}`}>
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="font-bold text-[#172126]">{msg.name}</h3>
+                    <p className="text-xs text-[#68777D]" dir="ltr">{msg.phone}</p>
                   </div>
-                </td>
-              </tr>
+                  <span className="text-xs text-[#68777D]">{new Date(msg.createdAt).toLocaleDateString('ar-EG')}</span>
+                </div>
+                {msg.subject && <p className="text-sm font-medium text-[#172126] mb-1">{msg.subject}</p>}
+                <p className="text-sm text-[#68777D] mb-4">{msg.message}</p>
+                <div className="flex gap-4">
+                  {!msg.isRead && (
+                    <form action={markMessageRead}>
+                      <input type="hidden" name="id" value={msg.id} />
+                      <input type="hidden" name="isRead" value="true" />
+                      <button type="submit" className="text-blue-600 text-xs hover:underline">تحديد كمقروء</button>
+                    </form>
+                  )}
+                  <form action={deleteMessage}>
+                    <input type="hidden" name="id" value={msg.id} />
+                    <button type="submit" className="text-red-500 text-xs hover:underline">حذف</button>
+                  </form>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </div>
+        )}
+      </AdminCard>
     </div>
   );
 }
