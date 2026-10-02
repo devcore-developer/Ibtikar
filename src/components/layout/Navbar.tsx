@@ -8,14 +8,14 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 import { MobileMenu } from "./MobileMenu";
 import Link from "next/link";
 import Image from "next/image";
-import { useCart } from "@/lib/cart/CartContext"; // Import Cart Context
+import { useCart } from "@/lib/cart/CartContext";
 
 export function Navbar() {
   const t = useTranslations("Navbar");
   const locale = useLocale();
   const fullPathname = usePathname();
   const pathname = fullPathname.replace(/^\/(ar|en)/, "") || "/";
-  const { itemCount } = useCart(); // Get cart count
+  const { itemCount } = useCart();
 
   const links = [
     { href: "/", label: t("home") },
@@ -32,7 +32,8 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur border-b border-[#E8ECEE]">
+    // تمت إضافة كلاس mobile-nav
+    <header className="mobile-nav sticky top-0 z-40 w-full bg-white/95 backdrop-blur border-b border-[#E8ECEE]">
       <Container>
         <div className="flex h-20 items-center justify-between gap-4">
           
@@ -79,7 +80,6 @@ export function Navbar() {
               <Search size={20} strokeWidth={1.5} />
             </button>
             
-            {/* Language Switcher - Now visible on mobile and desktop */}
             <LanguageSwitcher />
             
             <Link 

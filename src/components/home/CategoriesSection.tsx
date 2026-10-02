@@ -13,7 +13,6 @@ const iconMap: Record<string, any> = {
   'other-parts': Wrench
 };
 
-// لم يعد async، ويستقبل البيانات كـ Props
 export function CategoriesSection({ categories }: { categories: any[] }) {
   const t = useTranslations("Home");
   const locale = useLocale();
@@ -25,7 +24,8 @@ export function CategoriesSection({ categories }: { categories: any[] }) {
       <div className="absolute bottom-0 end-0 w-1/3 h-1/3 bg-[#EAF5F5] rounded-full blur-3xl opacity-40"></div>
 
       <Container className="relative z-10">
-        <div className="text-center mb-16">
+        {/* تمت إضافة كلاس section-header */}
+        <div className="section-header text-center mb-16">
           <div className="w-20 h-1 bg-[#086B70] mx-auto rounded-full mb-6"></div>
           <h2 className="text-3xl md:text-4xl font-extrabold text-[#086B70] mb-4">
             {t("categoriesTitle")}
@@ -35,7 +35,8 @@ export function CategoriesSection({ categories }: { categories: any[] }) {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
+        {/* تمت إضافة كلاس spare-parts-list */}
+        <div className="spare-parts-list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
           {categories.map((cat) => {
             const Icon = iconMap[cat.slug] || Wrench;
             return (

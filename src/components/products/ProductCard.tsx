@@ -17,8 +17,6 @@ export function ProductCard({ product }: { product: any }) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    // إضافة المنتج للسلة
     addItem({
       productId: product.id,
       slug: product.slug,
@@ -28,18 +26,16 @@ export function ProductCard({ product }: { product: any }) {
       image: product.image || "",
       quantity: 1
     });
-
-    // إظهار رسالة النجاح وإخفاؤها بعد ثانيتين
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };
 
   return (
+    // تمت إضافة كلاس product-card
     <Link 
       href={`/${locale}/product/${product.slug}`} 
-      className="relative flex flex-col group bg-white border border-[#E8ECEE]/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden rounded-lg"
+      className="product-card relative flex flex-col group bg-white border border-[#E8ECEE]/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden rounded-lg"
     >
-      {/* رسالة النجاح المنبثقة */}
       {isAdded && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 z-20 transition-all duration-300 animate-bounce">
           <Check size={16} strokeWidth={3} />
@@ -78,21 +74,13 @@ export function ProductCard({ product }: { product: any }) {
           type="button" 
           onClick={handleAddToCart}
           className={`w-full h-11 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors duration-300 shadow-sm ${
-            isAdded 
-              ? "bg-green-500 text-white" 
-              : "bg-[#086B70] text-white hover:bg-[#075F64]"
+            isAdded ? "bg-green-500 text-white" : "bg-[#086B70] text-white hover:bg-[#075F64]"
           }`}
         >
           {isAdded ? (
-            <>
-              <Check size={18} strokeWidth={2} />
-              تمت الإضافة
-            </>
+            <><Check size={18} strokeWidth={2} /> تمت الإضافة</>
           ) : (
-            <>
-              <ShoppingCart size={18} strokeWidth={2} />
-              {t("addToCart")}
-            </>
+            <><ShoppingCart size={18} strokeWidth={2} /> {t("addToCart")}</>
           )}
         </button>
       </div>

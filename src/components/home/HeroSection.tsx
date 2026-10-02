@@ -17,7 +17,8 @@ export function HeroSection() {
   ];
 
   return (
-    <section className="relative bg-[#FAFCFC] overflow-hidden">
+    // تمت إضافة كلاس hero-section
+    <section className="hero-section relative bg-[#FAFCFC] overflow-hidden">
       <Container className="pt-10 md:pt-12 pb-16 md:pb-20 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
           
@@ -35,7 +36,8 @@ export function HeroSection() {
               {t("subtitle")}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
+            {/* تمت إضافة كلاس hero-buttons */}
+            <div className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
               <button className="h-12 px-7 bg-[#086B70] text-white rounded-xl font-semibold hover:bg-[#075F64] transition-colors duration-300 flex items-center justify-center gap-2 shadow-lg shadow-[#086B70]/20">
                 {t("primaryBtn")}
                 <ArrowIcon size={18} />
