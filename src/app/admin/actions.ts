@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { encrypt, getSession } from "@/lib/auth";
 import bcrypt from "bcryptjs";
+import { generateSlug } from "@/lib/utils"; // تم إضافة الاستيراد
 
 // ==========================================
 // Auth Actions
@@ -20,10 +21,10 @@ export async function loginAction(email: string, password: string) {
   const session = await encrypt({ email: admin.email, expires });
   const cookieStore = await cookies();
   cookieStore.set("session", session, { 
-  expires, 
-  httpOnly: true, 
-  secure: process.env.NODE_ENV === "production" // يعمل كـ HTTPS فقط على Vercel
-});
+    expires, 
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === "production"
+  });
   return true;
 }
 
@@ -105,11 +106,20 @@ export async function deleteProduct(formData: FormData) {
 // ==========================================
 export async function createCategory(formData: FormData) {
   try {
+    const nameEn = formData.get("nameEn") as string;
+    let slug = generateSlug(nameEn);
+    
+    // التأكد من عدم تكرار الـ Slug
+    const existing = await prisma.category.findUnique({ where: { slug } });
+    if (existing) {
+      slug = `${slug}-${Date.now().toString().slice(-4)}`;
+    }
+    
     await prisma.category.create({
       data: {
         nameAr: formData.get("nameAr") as string,
-        nameEn: formData.get("nameEn") as string,
-        slug: formData.get("slug") as string,
+        nameEn,
+        slug,
         descriptionAr: formData.get("descriptionAr") as string || null,
         descriptionEn: formData.get("descriptionEn") as string || null,
       },
@@ -155,6 +165,50 @@ export async function createTechnician(formData: FormData) {
 // ==========================================
 // Order Actions
 // ==========================================
+export async function createOrder(formData: FormData) {
+  try {
+    const itemsJson = formData.get("items") as string;
+    const items = JSON.parse(itemsJson);
+    
+    const subtotal = parseFloat(formData.get("subtotal") as string);
+    const deliveryFee = parseFloat(formData.get("deliveryFee") as string);
+    const total = parseFloat(formData.get("total") as string);
+    
+    const order = await prisma.order.create({
+      data: {
+        customerName: formData.get("customerName") as string,
+        phone: formData.get("phone") as string,
+        area: formData.get("area") as string,
+        address: formData.get("address") as string,
+        notes: formData.get("notes") as string || null,
+        subtotal,
+        deliveryFee,
+        total,
+        paymentMethod: formData.get("paymentMethod") as string,
+        status: "PENDING",
+        items: {
+          create: items.map((item: any) => ({
+            productId: item.productId,
+            productName: item.nameAr || item.nameEn,
+            price: item.price,
+            quantity: item.quantity,
+            total: item.price * item.quantity,
+          })),
+        },
+      },
+    });
+    
+    // تحديث صفحة الأدمن لتظهر الطلبات الجديدة فوراً
+    revalidatePath("/admin/orders");
+    revalidatePath(`/admin/orders/${order.id}`);
+    
+    return { success: true, orderId: order.id };
+  } catch (error) {
+    console.error("Order creation failed:", error);
+    return { success: false, error: "Failed to create order" };
+  }
+}
+
 export async function updateOrderStatus(formData: FormData) {
   const id = formData.get("id") as string;
   const status = formData.get("status") as string;
@@ -191,7 +245,6 @@ export async function changeEmail(formData: FormData) {
   const session = await getSession();
   if (!session?.email) throw new Error("Not authenticated");
 
-  // تحويل email إلى string صراحة لتجنب خطأ TypeScript
   const sessionEmail = session.email as string;
   const currentPassword = formData.get("currentPassword") as string;
   const newEmail = formData.get("newEmail") as string;
@@ -217,7 +270,6 @@ export async function changePassword(formData: FormData) {
   const session = await getSession();
   if (!session?.email) throw new Error("Not authenticated");
 
-  // تحويل email إلى string صراحة لتجنب خطأ TypeScript
   const sessionEmail = session.email as string;
   const currentPassword = formData.get("currentPassword") as string;
   const newPassword = formData.get("newPassword") as string;

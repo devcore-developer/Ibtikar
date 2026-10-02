@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
 export function generateSlug(text: string): string {
   if (!text) return "";
   return text

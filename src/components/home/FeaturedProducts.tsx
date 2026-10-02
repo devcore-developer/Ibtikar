@@ -1,4 +1,4 @@
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Container } from "@/components/ui/Container";
 import { ProductCard } from "@/components/products/ProductCard";
 
@@ -18,6 +18,7 @@ export function FeaturedProducts({ products }: { products: any[] }) {
           </p>
         </div>
         
+        {/* استخدام مكون ProductCard الحقيقي الذي يحتوي على زر السلة */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />

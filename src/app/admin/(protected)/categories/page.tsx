@@ -25,7 +25,6 @@ export default function CategoriesPage() {
     
     if (result.success) {
       setIsModalOpen(false);
-      // Refresh the page to show new data
       window.location.reload(); 
     } else {
       setError(result.error || "حدث خطأ أثناء الحفظ.");
@@ -39,9 +38,6 @@ export default function CategoriesPage() {
         <h1 className="text-2xl font-bold">التصنيفات</h1>
         <Button onClick={handleAddClick}>إضافة تصنيف</Button>
       </div>
-
-      {/* Existing categories list would be fetched here via server component, 
-          but for simplicity in this fix, we rely on revalidate to refresh page */}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -57,10 +53,7 @@ export default function CategoriesPage() {
                   <label className="block text-sm font-medium mb-1">الاسم بالإنجليزية</label>
                   <input name="nameEn" required className="w-full h-11 px-4 border border-border rounded-md" />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">الرابط (Slug)</label>
-                  <input name="slug" required className="w-full h-11 px-4 border border-border rounded-md" placeholder="refrigerator-parts" />
-                </div>
+                {/* Slug field is hidden and generated server-side */}
                 
                 {error && <p className="text-red-500 text-sm">{error}</p>}
                 

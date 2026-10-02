@@ -1,22 +1,24 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { useCart } from "@/lib/cart/CartContext";
 import { formatCurrency } from "@/lib/format";
-import { ShoppingCart, Package } from "lucide-react";
+import { ShoppingCart, Package, Check } from "lucide-react";
 
 export function ProductCard({ product }: { product: any }) {
   const t = useTranslations("SpareParts");
   const locale = useLocale();
-  const { addItem } = useCart(); // استخدام addItem بدلاً من addToCart
+  const { addItem } = useCart();
+  const [isAdded, setIsAdded] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    // تمرير البيانات بالشكل الذي يتوقعه CartItem بناءً على ملف types/cart.ts
+    // إضافة المنتج للسلة
     addItem({
       productId: product.id,
       slug: product.slug,
@@ -26,13 +28,25 @@ export function ProductCard({ product }: { product: any }) {
       image: product.image || "",
       quantity: 1
     });
+
+    // إظهار رسالة النجاح وإخفاؤها بعد ثانيتين
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
   };
 
   return (
     <Link 
       href={`/${locale}/product/${product.slug}`} 
-      className="flex flex-col group bg-white border border-[#E8ECEE]/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden rounded-lg"
+      className="relative flex flex-col group bg-white border border-[#E8ECEE]/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden rounded-lg"
     >
+      {/* رسالة النجاح المنبثقة */}
+      {isAdded && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 z-20 transition-all duration-300 animate-bounce">
+          <Check size={16} strokeWidth={3} />
+          <span className="text-sm font-semibold">تمت الإضافة بنجاح</span>
+        </div>
+      )}
+
       <div className="relative aspect-[4/3] bg-[#F6F8F9] flex items-center justify-center p-6 overflow-hidden">
         {product.image ? (
           <Image 
@@ -61,11 +75,25 @@ export function ProductCard({ product }: { product: any }) {
 
       <div className="p-4 pt-0">
         <button 
+          type="button" 
           onClick={handleAddToCart}
-          className="w-full h-11 bg-[#086B70] text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[#075F64] transition-colors duration-300 shadow-sm"
+          className={`w-full h-11 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors duration-300 shadow-sm ${
+            isAdded 
+              ? "bg-green-500 text-white" 
+              : "bg-[#086B70] text-white hover:bg-[#075F64]"
+          }`}
         >
-          <ShoppingCart size={18} strokeWidth={2} />
-          {t("addToCart")}
+          {isAdded ? (
+            <>
+              <Check size={18} strokeWidth={2} />
+              تمت الإضافة
+            </>
+          ) : (
+            <>
+              <ShoppingCart size={18} strokeWidth={2} />
+              {t("addToCart")}
+            </>
+          )}
         </button>
       </div>
     </Link>

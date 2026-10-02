@@ -11,6 +11,7 @@ import { PaymentMethod, Order } from "@/types/order";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle, CreditCard, Banknote, Wallet } from "lucide-react";
+import { createOrder } from "@/app/admin/actions"; // استيراد دالة إنشاء الطلب
 
 export default function CheckoutPage() {
   const { items, subtotal, total, clearCart, isInitialized } = useCart();
@@ -26,6 +27,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("CASH_ON_DELIVERY");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
 
   if (isInitialized && items.length === 0) {
     router.push(`/${locale}/cart`);
@@ -49,32 +51,31 @@ export default function CheckoutPage() {
     if (!validate()) return;
     
     setLoading(true);
+    setServerError("");
     
-    // Simulate Order Creation
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const orderId = `IK-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${Math.random().toString(36).substring(2, 4).toUpperCase()}`;
-    
-    const order: Order = {
-      id: orderId,
-      customerName: formData.name,
-      phone: formData.phone,
-      area: formData.area as "INSIDE" | "OUTSIDE",
-      address: formData.address,
-      notes: formData.notes,
-      items: items.map(i => ({ ...i, total: i.price * i.quantity })),
-      subtotal,
-      deliveryFee,
-      total: finalTotal,
-      paymentMethod,
-      status: "PENDING",
-      createdAt: new Date().toISOString()
-    };
+    // إعداد بيانات الطلب لإرسالها للسيرفر
+    const formDataObj = new FormData();
+    formDataObj.append("customerName", formData.name);
+    formDataObj.append("phone", formData.phone);
+    formDataObj.append("area", formData.area);
+    formDataObj.append("address", formData.address);
+    formDataObj.append("notes", formData.notes);
+    formDataObj.append("paymentMethod", paymentMethod);
+    formDataObj.append("items", JSON.stringify(items));
+    formDataObj.append("subtotal", subtotal.toString());
+    formDataObj.append("deliveryFee", deliveryFee.toString());
+    formDataObj.append("total", finalTotal.toString());
 
-    // Store in temp local storage for success page
-    localStorage.setItem("ik_last_order", JSON.stringify(order));
-    clearCart();
-    router.push(`/${locale}/order-success`);
+    // استدعاء دالة السيرفر لحفظ الطلب في قاعدة البيانات
+    const result = await createOrder(formDataObj);
+    
+    if (result.success) {
+      clearCart(); // تفريغ السلة فقط بعد نجاح الحفظ
+      router.push(`/${locale}/order-success?orderId=${result.orderId}`);
+    } else {
+      setServerError(result.error || "فشل إنشاء الطلب، يرجى المحاولة مرة أخرى.");
+      setLoading(false);
+    }
   };
 
   const inputClass = "w-full h-11 px-4 bg-surface border rounded-md text-sm focus:outline-none focus:border-primary transition-colors";
@@ -179,6 +180,9 @@ export default function CheckoutPage() {
                 <span className="text-primary">{formatPrice(finalTotal, locale)}</span>
               </div>
             </div>
+            
+            {serverError && <p className="text-error text-sm mt-4 text-center">{serverError}</p>}
+            
             <Button type="submit" size="lg" className="w-full mt-6" disabled={loading}>
               {loading ? t("loading") : t("placeOrder")}
             </Button>

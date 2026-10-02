@@ -43,7 +43,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ local
         <div className="text-center py-20">
           <Package size={64} className="mx-auto text-muted/20 mb-4" strokeWidth={1} />
           <p className="text-muted text-lg">
-            {locale === "ar" ? "لا توجد منتجات في هذا التصنيف حاليًا." : "No products are available in this category yet."}
+            {locale === "ar" ? "لا توجد منتجات في هذا التصنيف حاليًا." : "No products are currently available in this category."}
           </p>
         </div>
       ) : (

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminShell } from "@/components/admin/AdminShell";
 
 export default async function ProtectedLayout({ 
   children 
@@ -9,16 +9,17 @@ export default async function ProtectedLayout({
 }) {
   const session = await getSession();
   
+  // التأكد من تسجيل الدخول قبل السماح بالدخول للوحة التحكم
   if (!session) {
     redirect("/admin/login");
   }
 
+  // تغليف المحتوى بالـ Admin Shell الجديد
   return (
-    <div className="flex min-h-screen bg-background" dir="rtl">
-      <AdminSidebar />
-      <main className="flex-1 p-8 overflow-x-hidden">
+    <div dir="rtl">
+      <AdminShell>
         {children}
-      </main>
+      </AdminShell>
     </div>
   );
 }
