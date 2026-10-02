@@ -150,12 +150,22 @@ export async function deleteCategory(formData: FormData) {
 // ==========================================
 export async function createTechnician(formData: FormData) {
   try {
+    const nameEn = formData.get("nameEn") as string;
+    let slug = generateSlug(nameEn);
+    
+    // التأكد من عدم تكرار الـ Slug
+    const existing = await prisma.technician.findUnique({ where: { slug } });
+    if (existing) {
+      slug = `${slug}-${Date.now().toString().slice(-4)}`;
+    }
+
     const serviceSlugs = (formData.get("serviceSlugs") as string).split(",").map(s => s.trim()).filter(Boolean);
+    
     await prisma.technician.create({
       data: {
         nameAr: formData.get("nameAr") as string,
-        nameEn: formData.get("nameEn") as string,
-        slug: formData.get("slug") as string,
+        nameEn,
+        slug, // يتم توليده تلقائياً هنا
         specialtyAr: formData.get("specialtyAr") as string,
         specialtyEn: formData.get("specialtyEn") as string,
         experience: formData.get("experience") as string || null,
@@ -173,7 +183,39 @@ export async function createTechnician(formData: FormData) {
     return { success: false, error: "Failed to create technician." };
   }
 }
+export async function deleteTechnician(formData: FormData) {
+  const id = formData.get("id") as string;
+  try {
+    await prisma.technician.delete({ where: { id } });
+  } catch (error) {
+    console.error("Failed to delete technician:", error);
+  }
+  revalidatePath("/admin/technicians");
+  revalidatePath("/[locale]/technicians", "page");
+}
 
+export async function updateTechnicianAction(formData: FormData) {
+  const id = formData.get("id") as string;
+  const serviceSlugs = (formData.get("serviceSlugs") as string).split(",").map(s => s.trim()).filter(Boolean);
+  
+  await prisma.technician.update({
+    where: { id },
+    data: {
+      nameAr: formData.get("nameAr") as string,
+      nameEn: formData.get("nameEn") as string,
+      specialtyAr: formData.get("specialtyAr") as string,
+      specialtyEn: formData.get("specialtyEn") as string,
+      experience: formData.get("experience") as string || null,
+      phone: formData.get("phone") as string || null,
+      bioAr: formData.get("bioAr") as string || null,
+      bioEn: formData.get("bioEn") as string || null,
+      serviceSlugs,
+      image: formData.get("image") as string || null,
+    },
+  });
+  revalidatePath("/admin/technicians");
+  revalidatePath("/[locale]/technicians", "page");
+}
 // ==========================================
 // Order Actions
 // ==========================================

@@ -75,7 +75,7 @@ export function Navbar() {
             })}
           </nav>
 
-          <div className="flex items-center gap-2 md:gap-3 shrink-0">
+          <div className="flex items-center gap-1 md:gap-3 shrink-0">
             <button className="hidden md:flex p-2 text-[#68777D] hover:text-[#0B5C63] hover:bg-[#F6F8F9] rounded-full transition-all duration-200 items-center justify-center" aria-label="Search">
               <Search size={20} strokeWidth={1.5} />
             </button>

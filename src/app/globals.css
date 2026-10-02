@@ -171,5 +171,13 @@ body {
     padding: 40px 20px !important;
     color: white !important;
   }
+    /* 7. NAVBAR GROUPING (Mobile Only) */
+  .mobile-nav .justify-between {
+    justify-content: flex-start !important;
+    gap: 12px !important;
+  }
+  .mobile-nav .shrink-0 {
+    margin-inline-start: auto !important; /* يرجع الأيقونات للطرف الآخر إذا أردت، أو احذفه ليكونوا كلهم معاً */
+  }
   .footer-dark a { color: rgba(255,255,255,0.8) !important; }
 }

@@ -1,102 +1,61 @@
-"use client";
+import { prisma } from "@/lib/prisma";
+import { AdminCard, AdminCardHeader } from "@/components/admin/ui";
+import { deleteTechnician } from "@/app/admin/actions";
+import TechniciansClient from "./TechniciansClient";
+import Link from "next/link";
 
-import { useState } from "react";
-import { createTechnician } from "@/app/admin/actions";
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent } from "@/components/ui/Card";
-import { ImageUpload } from "@/components/admin/ImageUpload";
-
-export default function TechniciansPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-
-  const handleAddClick = () => {
-    setError("");
-    setImageUrl("");
-    setIsModalOpen(true);
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError("");
-    
-    const formData = new FormData(e.currentTarget);
-    // Append the image URL from state
-    formData.append("image", imageUrl);
-    
-    const result = await createTechnician(formData);
-    
-    if (result.success) {
-      setIsModalOpen(false);
-      window.location.reload(); 
-    } else {
-      setError(result.error || "حدث خطأ أثناء الحفظ.");
-    }
-    setIsSubmitting(false);
-  };
+export default async function TechniciansPage() {
+  const technicians = await prisma.technician.findMany();
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">الفنيون</h1>
-        <Button onClick={handleAddClick}>إضافة فني</Button>
+        <TechniciansClient />
       </div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <Card className="w-full max-w-2xl bg-white my-8">
-            <CardContent className="p-6">
-              <h2 className="text-xl font-bold mb-4">إضافة فني جديد</h2>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">صورة الفني</label>
-                  <ImageUpload onImageChange={(url) => setImageUrl(url)} />
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">الاسم بالعربية</label>
-                    <input name="nameAr" required className="w-full h-11 px-4 border border-border rounded-md" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">الاسم بالإنجليزية</label>
-                    <input name="nameEn" required className="w-full h-11 px-4 border border-border rounded-md" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">الرابط (Slug)</label>
-                  <input name="slug" required className="w-full h-11 px-4 border border-border rounded-md" />
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">التخصص (عربي)</label>
-                    <input name="specialtyAr" required className="w-full h-11 px-4 border border-border rounded-md" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">التخصص (إنجليزي)</label>
-                    <input name="specialtyEn" required className="w-full h-11 px-4 border border-border rounded-md" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">الخدمات (مفصولة بفاصلة)</label>
-                  <input name="serviceSlugs" required className="w-full h-11 px-4 border border-border rounded-md" placeholder="refrigerator-repair, ac-repair" />
-                </div>
-                
-                {error && <p className="text-red-500 text-sm">{error}</p>}
-                
-                <div className="flex gap-3 justify-end">
-                  <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>إلغاء</Button>
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "جاري الحفظ..." : "حفظ الفني"}
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
+      <AdminCard>
+        <AdminCardHeader title="قائمة الفنيين" />
+        <div className="overflow-x-auto">
+          <table className="w-full text-right">
+            <thead className="bg-[#F6F8F9] border-b border-[#E8ECEE]">
+              <tr>
+                <th className="p-4 font-semibold">الاسم</th>
+                <th className="p-4 font-semibold">التخصص</th>
+                <th className="p-4 font-semibold">الهاتف</th>
+                <th className="p-4 font-semibold">إجراءات</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#E8ECEE]">
+              {technicians.map((tech) => (
+                <tr key={tech.id} className="hover:bg-[#F6F8F9]">
+                  <td className="p-4 font-medium text-[#172126]">{tech.nameAr}</td>
+                  <td className="p-4 text-[#68777D]">{tech.specialtyAr}</td>
+                  <td className="p-4 text-[#68777D]" dir="ltr">{tech.phone || "-"}</td>
+                  <td className="p-4 flex gap-3">
+                    <Link href={`/admin/technicians/${tech.id}/edit`} className="text-blue-500 text-sm hover:underline font-medium">
+                      تعديل
+                    </Link>
+                    <form action={deleteTechnician}>
+                      <input type="hidden" name="id" value={tech.id} />
+                      <button type="submit" className="text-red-500 text-sm hover:underline font-medium">
+                        حذف
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+              {technicians.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="p-8 text-center text-[#68777D]">
+                    لا يوجد فنيون حالياً.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
+      </AdminCard>
     </div>
   );
 }
