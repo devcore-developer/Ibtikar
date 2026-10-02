@@ -131,6 +131,19 @@ export async function createCategory(formData: FormData) {
     return { success: false, error: "Failed to create category." };
   }
 }
+export async function deleteCategory(formData: FormData) {
+  const id = formData.get("id") as string;
+  try {
+    await prisma.category.delete({ where: { id } });
+  } catch (error) {
+    console.error("Failed to delete category:", error);
+    // إذا فشل الحذف (مثلاً لأن التصنيف يحتوي على منتجات)، سيتم تسجيل الخطأ هنا
+  }
+  // تحديث الصفحات ليعكس التغيير فوراً
+  revalidatePath("/admin/categories");
+  revalidatePath("/admin/products/new");
+  revalidatePath("/[locale]/spare-parts", "page");
+}
 
 // ==========================================
 // Technician Actions
