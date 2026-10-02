@@ -29,7 +29,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <div className="p-6 flex items-center gap-2 border-b border-white/10">
         <Image 
           src="/logos/logo.png" 
-          alt="Ebtikar Al Khaleej Logo" 
+          alt="Ebtekar Al Khaleej Logo" 
           width={32} 
           height={32} 
           className="rounded-lg object-contain"
@@ -78,7 +78,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <div className="flex items-center gap-2">
           <Image 
             src="/logos/logo.png" 
-            alt="Ebtikar Al Khaleej Logo" 
+            alt="Ebtekar Al Khaleej Logo" 
             width={28} 
             height={28} 
             className="rounded-lg object-contain"
@@ -107,7 +107,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 lg:mr-64 p-4 lg:p-8">
+        <main className="flex-1 lg:mr-64 p-4 lg:p-8 overflow-x-hidden w-full">
           {children}
         </main>
       </div>

@@ -181,3 +181,52 @@ body {
   }
   .footer-dark a { color: rgba(255,255,255,0.8) !important; }
 }
+
+/* ==========================================
+   ADMIN MOBILE RESPONSIVE FIXES (Max 767px)
+   ========================================== */
+@media (max-width: 767px) {
+  /* 1. منع التمرير الأفقي للصفحة بالكامل */
+  body {
+    overflow-x: hidden !important;
+  }
+  .mobile-nav {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  /* 2. ضبط رأس الموبايل (التوسيط والمسافات) */
+  .mobile-nav header {
+    padding: 12px 20px !important; /* مسافة متوازنة من الحواف */
+    align-items: center !important;
+  }
+  .mobile-nav header > div {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  /* 3. إصلاح بطاقات الإحصائيات (لتكون 2x3 بدون خروج عن الشاشة) */
+  .mobile-nav main {
+    padding: 20px 16px !important; /* تباعد صفحة مريح */
+  }
+  .mobile-nav .grid.grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important; /* عمودين متساويين */
+    gap: 12px !important;
+    max-width: 100% !important;
+  }
+  .mobile-nav .grid.grid-cols-2 > * {
+    min-width: 0 !important; /* منع تمدد البطاقات خارج الحاوية */
+    width: 100% !important;
+  }
+
+  /* 4. إصلاح جدول الطلبات (تمرير أفقي داخل البطاقة فقط) */
+  .mobile-nav .overflow-x-auto {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    padding-bottom: 8px; /* مساحة لشريط التمرير */
+  }
+  .mobile-nav table {
+    min-width: 600px !important; /* منع ضغط الأعمدة بشكل مفرط */
+  }
+}

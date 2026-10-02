@@ -25,7 +25,7 @@ export async function generateMetadata({
   const isAr = locale === "ar";
   
   return {
-    title: isAr ? "ابتكار الخليج | قطع غيار وصيانة الأجهزة الكهربائية" : "Ebtikar Al Khaleej | Appliance Spare Parts & Repair",
+    title: isAr ? "ابتكار الخليج | قطع غيار وصيانة الأجهزة الكهربائية" : "Ebtekar Al Khaleej | Appliance Spare Parts & Repair",
     description: isAr 
       ? "قطع غيار أصلية وخدمات صيانة وإصلاح الأجهزة الكهربائية والإلكترونية مع فنيين متخصصين وخدمة موثوقة."
       : "Professional appliance spare parts, maintenance and repair services with specialized technicians and reliable support.",

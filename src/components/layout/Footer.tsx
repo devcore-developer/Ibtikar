@@ -34,7 +34,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-16">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <Image src="/logos/logo.png" alt="Ebtikar Al Khaleej Logo" width={48} height={48} className="rounded-lg" />
+              <Image src="/logos/logo.png" alt="Ebtekar Al Khaleej Logo" width={48} height={48} className="rounded-lg" />
               <h3 className="text-xl font-bold">ابتكار الخليج</h3>
             </div>
             <p className="text-sm text-white/70">{tf("brandDesc")}</p>

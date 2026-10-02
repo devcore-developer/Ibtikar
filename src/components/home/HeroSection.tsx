@@ -19,7 +19,7 @@ export function HeroSection() {
   return (
     // تمت إضافة كلاس hero-section
     <section className="hero-section relative bg-[#FAFCFC] overflow-hidden">
-      <Container className="pt-10 md:pt-12 pb-16 md:pb-20 relative z-10">
+      <Container className="pt-8 md:pt-10 pb-8 md:pb-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
           
           {/* RIGHT SIDE - Text Content */}

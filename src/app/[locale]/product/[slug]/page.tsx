@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const isAr = locale === "ar";
   const name = isAr ? product.nameAr : product.nameEn;
   return {
-    title: `${name} | Ebtikar Al Khaleej`,
+    title: `${name} | Ebtekar Al Khaleej`,
     description: isAr ? product.descriptionAr || "" : product.descriptionEn || ""
   };
 }

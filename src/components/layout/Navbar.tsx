@@ -40,7 +40,7 @@ export function Navbar() {
           <Link href={`/${locale}`} className="flex items-center gap-2.5 shrink-0">
             <Image 
               src="/logos/logo.png" 
-              alt="Ebtikar Al Khaleej Logo" 
+              alt="Ebtekar Al Khaleej Logo" 
               width={40} 
               height={40} 
               className="rounded-lg object-contain"
@@ -48,7 +48,7 @@ export function Navbar() {
             />
             <div className="flex flex-col leading-tight">
               <span className="font-bold text-[#172126] text-base md:text-lg">
-                {locale === "ar" ? "ابتكار الخليج" : "Ebtikar Al Khaleej"}
+                {locale === "ar" ? "ابتكار الخليج" : "Ebtekar Al Khaleej"}
               </span>
               <span className="text-[10px] text-[#68777D] hidden sm:block">
                 {locale === "ar" ? "للأجهزة الكهربائية والإلكترونية" : "Electrical & Electronic Appliances"}
@@ -75,7 +75,7 @@ export function Navbar() {
             })}
           </nav>
 
-          <div className="flex items-center gap-1 md:gap-3 shrink-0">
+          <div className="flex items-center gap-2 md:gap-3 shrink-0">
             <button className="hidden md:flex p-2 text-[#68777D] hover:text-[#0B5C63] hover:bg-[#F6F8F9] rounded-full transition-all duration-200 items-center justify-center" aria-label="Search">
               <Search size={20} strokeWidth={1.5} />
             </button>
@@ -95,7 +95,7 @@ export function Navbar() {
               )}
             </Link>
             
-            <div className="lg:hidden">
+            <div className={`lg:hidden ${locale === "en" ? "-ms-3" : ""}`}>
               <MobileMenu />
             </div>
           </div>

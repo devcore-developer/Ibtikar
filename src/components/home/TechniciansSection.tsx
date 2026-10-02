@@ -1,9 +1,7 @@
 import { useTranslations, useLocale } from "next-intl";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
-import { Card, CardContent, CardFooter } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { UserCircle, Phone } from "lucide-react";
+import { TechnicianCard } from "@/components/technicians/TechnicianCard";
 import Link from "next/link";
 
 export function TechniciansSection({ technicians }: { technicians: any[] }) {
@@ -19,36 +17,15 @@ export function TechniciansSection({ technicians }: { technicians: any[] }) {
             <p className="text-muted">{t("techSubtitle")}</p>
           </div>
           <Link href={`/${locale}/technicians`}>
-            <Button variant="ghost" className="text-primary border border-border">
+            <span className="text-primary border border-border px-4 py-2 rounded-lg hover:bg-muted/5 text-sm font-medium">
               {t("viewAllTechs")}
-            </Button>
+            </span>
           </Link>
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {technicians.map((tech) => (
-            <Card key={tech.id} className="text-center group h-full flex flex-col">
-              <CardContent className="p-6 flex flex-col items-center flex-1">
-                <div className="w-24 h-24 rounded-full bg-muted/10 flex items-center justify-center text-muted/40 mb-4 group-hover:bg-primary/10 group-hover:text-primary/50 transition-colors">
-                  <UserCircle size={80} strokeWidth={1} />
-                </div>
-                <h3 className="font-semibold text-foreground text-lg">
-                  {locale === "ar" ? tech.nameAr : tech.nameEn}
-                </h3>
-                <span className="text-accent text-sm font-medium mb-2">
-                  {locale === "ar" ? tech.specialtyAr : tech.specialtyEn}
-                </span>
-                <p className="text-muted text-sm leading-relaxed line-clamp-3">
-                  {locale === "ar" ? (tech.bioAr || "") : (tech.bioEn || "")}
-                </p>
-              </CardContent>
-              <CardFooter className="p-4 pt-0 flex justify-center">
-                <Button variant="outline" size="sm" className="gap-2" disabled>
-                  <Phone size={14} />
-                  {t("techCall")}
-                </Button>
-              </CardFooter>
-            </Card>
+            <TechnicianCard key={tech.id} technician={tech} />
           ))}
         </div>
       </Container>
