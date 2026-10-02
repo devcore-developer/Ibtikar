@@ -13,10 +13,6 @@ const nextConfig = {
       { protocol: 'https', hostname: '**' }, // Wildcard for safety
     ],
   },
-  // تم إضافة هذا القسم للسماح برفع الصور الأكبر من 1 ميجابايت
-  serverActions: {
-    bodySizeLimit: '10mb',
-  },
   async headers() {
     return [
       {
