@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { encrypt, getSession } from "@/lib/auth";
 import bcrypt from "bcryptjs";
-import { generateSlug } from "@/lib/utils"; // تم إضافة الاستيراد
+import { generateSlug } from "@/lib/utils";
 
 // ==========================================
 // Auth Actions
@@ -109,7 +109,6 @@ export async function createCategory(formData: FormData) {
     const nameEn = formData.get("nameEn") as string;
     let slug = generateSlug(nameEn);
     
-    // التأكد من عدم تكرار الـ Slug
     const existing = await prisma.category.findUnique({ where: { slug } });
     if (existing) {
       slug = `${slug}-${Date.now().toString().slice(-4)}`;
@@ -173,6 +172,15 @@ export async function createOrder(formData: FormData) {
     const subtotal = parseFloat(formData.get("subtotal") as string);
     const deliveryFee = parseFloat(formData.get("deliveryFee") as string);
     const total = parseFloat(formData.get("total") as string);
+    const paymentMethod = formData.get("paymentMethod") as string;
+    const paymentProofUrl = formData.get("paymentProofUrl") as string;
+
+    // Server-side validation for payment proof
+    if (paymentMethod !== "CASH_ON_DELIVERY" && !paymentProofUrl) {
+      return { success: false, error: "Payment proof is required for WAMD or Bank Transfer." };
+    }
+
+    const paymentStatus = paymentMethod === "CASH_ON_DELIVERY" ? "UNPAID" : "PROOF_SUBMITTED";
     
     const order = await prisma.order.create({
       data: {
@@ -184,7 +192,9 @@ export async function createOrder(formData: FormData) {
         subtotal,
         deliveryFee,
         total,
-        paymentMethod: formData.get("paymentMethod") as string,
+        paymentMethod,
+        paymentStatus,
+        paymentProofUrl: paymentProofUrl || null,
         status: "PENDING",
         items: {
           create: items.map((item: any) => ({
@@ -198,7 +208,6 @@ export async function createOrder(formData: FormData) {
       },
     });
     
-    // تحديث صفحة الأدمن لتظهر الطلبات الجديدة فوراً
     revalidatePath("/admin/orders");
     revalidatePath(`/admin/orders/${order.id}`);
     
@@ -213,6 +222,19 @@ export async function updateOrderStatus(formData: FormData) {
   const id = formData.get("id") as string;
   const status = formData.get("status") as string;
   await prisma.order.update({ where: { id }, data: { status } });
+  revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${id}`);
+}
+
+export async function verifyPaymentAction(formData: FormData) {
+  const id = formData.get("id") as string;
+  const status = formData.get("paymentStatus") as string; // VERIFIED or REJECTED
+  
+  await prisma.order.update({
+    where: { id },
+    data: { paymentStatus: status }
+  });
+  
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${id}`);
 }
@@ -239,7 +261,7 @@ export async function deleteMessage(id: string) {
 }
 
 // ==========================================
-// Settings Actions (تغيير الإيميل وكلمة المرور)
+// Settings Actions
 // ==========================================
 export async function changeEmail(formData: FormData) {
   const session = await getSession();
@@ -299,5 +321,6 @@ export async function updateSettings(formData: FormData) {
     });
   }
   revalidatePath("/admin/settings");
+  revalidatePath("/[locale]/checkout", "page");
   revalidatePath("/");
 }

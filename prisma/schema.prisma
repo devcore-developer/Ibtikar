@@ -55,6 +55,8 @@ model Order {
   deliveryFee   Float
   total         Float
   paymentMethod String
+  paymentStatus String      @default("UNPAID") // NEW: UNPAID, PROOF_SUBMITTED, VERIFIED, REJECTED
+  paymentProofUrl String?  // NEW: URL from ImgBB/Storage
   status        String      @default("PENDING")
   createdAt     DateTime    @default(now())
   items         OrderItem[]

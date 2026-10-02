@@ -51,10 +51,16 @@ export function AdminCard({ children, className }: { children: React.ReactNode; 
   );
 }
 
-export function AdminCardHeader({ title, action }: { title: string; action?: React.ReactNode }) {
+// ==========================================
+// Card Header (تم إضافة خاصية icon هنا)
+// ==========================================
+export function AdminCardHeader({ title, action, icon: Icon }: { title: string; action?: React.ReactNode; icon?: LucideIcon }) {
   return (
     <div className="p-5 border-b border-[#E8ECEE] flex items-center justify-between">
-      <h3 className="font-bold text-[#172126]">{title}</h3>
+      <div className="flex items-center gap-2">
+        {Icon && <Icon size={18} className="text-[#0B5C63]" />}
+        <h3 className="font-bold text-[#172126]">{title}</h3>
+      </div>
       {action}
     </div>
   );
@@ -91,6 +97,10 @@ const statusStyles: Record<string, string> = {
   CANCELLED: "bg-red-50 text-red-700 border-red-200",
   NEW: "bg-blue-50 text-blue-700 border-blue-200",
   READ: "bg-gray-50 text-gray-600 border-gray-200",
+  UNPAID: "bg-amber-50 text-amber-700 border-amber-200",
+  PROOF_SUBMITTED: "bg-amber-50 text-amber-700 border-amber-200",
+  VERIFIED: "bg-green-50 text-green-700 border-green-200",
+  REJECTED: "bg-red-50 text-red-700 border-red-200",
 };
 
 const statusTranslations: Record<string, string> = {
@@ -102,6 +112,10 @@ const statusTranslations: Record<string, string> = {
   CANCELLED: "ملغي",
   NEW: "جديد",
   READ: "مقروء",
+  UNPAID: "غير مدفوع",
+  PROOF_SUBMITTED: "إثبات الدفع مرفوع",
+  VERIFIED: "تم التحقق",
+  REJECTED: "مرفوض",
 };
 
 export function StatusBadge({ status }: { status: string }) {
