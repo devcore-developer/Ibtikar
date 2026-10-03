@@ -2,7 +2,49 @@
 
 import { useState, useRef } from "react";
 import { UploadCloud, X, Loader2 } from "lucide-react";
-import { uploadImageAction } from "@/app/admin/actions";
+
+// دالة لضغط الصورة قبل الرفع لتجنب قيود حجم الـ Body في Vercel
+async function compressImage(file: File, maxWidth = 1920, quality = 0.8): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("Canvas not supported"));
+        
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) return reject(new Error("Compression failed"));
+            const compressedFile = new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), {
+              type: "image/jpeg",
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+      img.onerror = () => reject(new Error("Image load error"));
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => reject(new Error("File read error"));
+    reader.readAsDataURL(file);
+  });
+}
 
 export function ImageUpload({ onImageChange, existingImage }: { onImageChange: (url: string) => void, existingImage?: string }) {
   const [preview, setPreview] = useState(existingImage || "");
@@ -14,21 +56,34 @@ export function ImageUpload({ onImageChange, existingImage }: { onImageChange: (
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) { setError("File size must be less than 5MB"); return; }
-    if (!file.type.startsWith("image/")) { setError("Only image files are allowed"); return; }
-
     setError("");
     setIsUploading(true);
     setPreview(URL.createObjectURL(file));
 
     try {
+      // 1. ضغط الصورة قبل الرفع
+      const compressedFile = await compressImage(file);
+
+      // 2. رفع الصورة للـ API Route الجديد
       const formData = new FormData();
-      formData.append("file", file);
-      const url = await uploadImageAction(formData);
-      setPreview(url);
-      onImageChange(url);
+      formData.append("file", compressedFile);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Upload failed");
+      }
+
+      setPreview(result.url);
+      onImageChange(result.url);
     } catch (err) {
-      setError("Upload failed.");
+      console.error("[CLIENT_UPLOAD_ERROR]", err);
+      setError("تعذر رفع الصورة. يرجى المحاولة مرة أخرى.");
       setPreview(existingImage || "");
     } finally {
       setIsUploading(false);

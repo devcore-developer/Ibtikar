@@ -153,6 +153,14 @@ export async function createTechnician(formData: FormData) {
     const nameEn = formData.get("nameEn") as string;
     let slug = generateSlug(nameEn);
     
+    // FIX: Fallback لو الـ slug فاضي
+    if (!slug || slug.trim() === "") {
+      slug = generateSlug(formData.get("nameAr") as string);
+    }
+    if (!slug || slug.trim() === "") {
+      slug = `tech-${Date.now().toString().slice(-4)}`; // Final fallback
+    }
+
     // التأكد من عدم تكرار الـ Slug
     const existing = await prisma.technician.findUnique({ where: { slug } });
     if (existing) {
@@ -165,7 +173,7 @@ export async function createTechnician(formData: FormData) {
       data: {
         nameAr: formData.get("nameAr") as string,
         nameEn,
-        slug, // يتم توليده تلقائياً هنا
+        slug,
         specialtyAr: formData.get("specialtyAr") as string,
         specialtyEn: formData.get("specialtyEn") as string,
         experience: formData.get("experience") as string || null,
@@ -176,10 +184,15 @@ export async function createTechnician(formData: FormData) {
         image: formData.get("image") as string || null,
       },
     });
+
+    // FIX: تحديث الـ Cache لصفحة الفنيين وصفحة التفاصيل
     revalidatePath("/admin/technicians");
     revalidatePath("/[locale]/technicians", "page");
+    revalidatePath("/[locale]/technicians/[slug]", "page"); // مهم جداً عشان نتأكد إن الصفحة الجديدة متعملهاش Cache كـ 404
+    
     return { success: true };
   } catch (error) {
+    console.error("Failed to create technician:", error);
     return { success: false, error: "Failed to create technician." };
   }
 }
