@@ -1,11 +1,20 @@
 import { getRequestConfig } from 'next-intl/server';
 import { routing } from './routing';
+import { cookies } from 'next/headers';
 
 export default getRequestConfig(async ({ requestLocale }) => {
-  // Use let instead of const
   let locale = await requestLocale;
   
-  // Fallback to default locale if the URL doesn't contain a valid one
+  // لو الرابط مفيهوش locale (زي مسارات /admin)، نقرأ كوكيز الأدمن
+  if (!locale) {
+    const cookieStore = await cookies();
+    const adminLocale = cookieStore.get('admin_locale')?.value;
+    if (adminLocale && routing.locales.includes(adminLocale as any)) {
+      locale = adminLocale;
+    }
+  }
+
+  // لو لسه مفيش لغة، نرجع للغة الافتراضية (العربي)
   if (!locale || !routing.locales.includes(locale as any)) {
     locale = routing.defaultLocale;
   }

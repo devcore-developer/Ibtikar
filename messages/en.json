@@ -394,7 +394,23 @@
       "appliance": "Appliance",
       "status": "Status",
       "actions": "Actions",
-      "view_details": "View Details"
+      "view_details": "View Details",
+      "back": "Back to Requests",
+      "customer_info": "Customer Information",
+      "service_info": "Service Information",
+      "status_notes": "Request Status & Notes",
+      "name": "Name",
+      "area": "Area",
+      "address": "Address",
+      "appliance_type": "Appliance Type",
+      "service_id": "Service ID",
+      "brand": "Brand",
+      "model": "Model",
+      "problem": "Problem Description",
+      "preferred_time": "Preferred Contact Time",
+      "notes": "Admin Notes",
+      "created_at": "Created At",
+      "current_status": "Current Status"
     }
   }
 }

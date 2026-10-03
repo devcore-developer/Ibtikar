@@ -394,7 +394,23 @@
       "appliance": "الجهاز",
       "status": "الحالة",
       "actions": "إجراء",
-      "view_details": "عرض التفاصيل"
+      "view_details": "عرض التفاصيل",
+      "back": "العودة للطلبات",
+      "customer_info": "معلومات العميل",
+      "service_info": "معلومات الخدمة",
+      "status_notes": "حالة الطلب والملاحظات",
+      "name": "الاسم",
+      "area": "المنطقة",
+      "address": "العنوان",
+      "appliance_type": "نوع الجهاز",
+      "service_id": "الخدمة المطلوبة",
+      "brand": "الماركة",
+      "model": "الموديل",
+      "problem": "وصف المشكلة",
+      "preferred_time": "الوقت المناسب للتواصل",
+      "notes": "ملاحظات إضافية",
+      "created_at": "تاريخ الإنشاء",
+      "current_status": "الحالة الحالية"
     }
   }
 }
