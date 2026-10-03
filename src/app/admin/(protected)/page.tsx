@@ -1,9 +1,17 @@
 import { prisma } from "@/lib/prisma";
-import { AdminCard, AdminCardHeader, StatusBadge, EmptyState } from "@/components/admin/ui";
+import { AdminCard, AdminCardHeader, EmptyState } from "@/components/admin/ui";
 import { Package, ShoppingCart, ClipboardList, Mail, Wrench, Clock } from "lucide-react";
 import Link from "next/link";
+import { getTranslations, getLocale } from "next-intl/server";
+import { formatCurrency } from "@/lib/format";
+import { getOrderStatusLabel, getLocalizedField } from "@/lib/localization";
 
 export default async function AdminDashboard() {
+  const t = await getTranslations("Admin");
+  const locale = await getLocale();
+  const isRTL = locale === "ar";
+  const textAlign = isRTL ? "text-right" : "text-left";
+
   const productCount = await prisma.product.count();
   const orderCount = await prisma.order.count();
   const pendingOrders = await prisma.order.count({ where: { status: "PENDING" } });
@@ -18,19 +26,19 @@ export default async function AdminDashboard() {
   });
 
   const stats = [
-    { label: "إجمالي المنتجات", value: productCount, icon: Package, color: "bg-blue-50 text-blue-600" },
-    { label: "إجمالي الطلبات", value: orderCount, icon: ShoppingCart, color: "bg-teal-50 text-teal-600" },
-    { label: "طلبات معلقة", value: pendingOrders, icon: Clock, color: "bg-amber-50 text-amber-600" },
-    { label: "طلبات الصيانة", value: maintenanceCount, icon: ClipboardList, color: "bg-indigo-50 text-indigo-600" },
-    { label: "رسائل جديدة", value: unreadMessages, icon: Mail, color: "bg-red-50 text-red-600" },
-    { label: "عدد الفنيين", value: technicianCount, icon: Wrench, color: "bg-purple-50 text-purple-600" },
+    { label: t("stats.totalProducts"), value: productCount, icon: Package, color: "bg-blue-50 text-blue-600" },
+    { label: t("stats.totalOrders"), value: orderCount, icon: ShoppingCart, color: "bg-teal-50 text-teal-600" },
+    { label: t("stats.pendingOrders"), value: pendingOrders, icon: Clock, color: "bg-amber-50 text-amber-600" },
+    { label: t("stats.maintenanceRequests"), value: maintenanceCount, icon: ClipboardList, color: "bg-indigo-50 text-indigo-600" },
+    { label: t("stats.newMessages"), value: unreadMessages, icon: Mail, color: "bg-red-50 text-red-600" },
+    { label: t("stats.totalTechnicians"), value: technicianCount, icon: Wrench, color: "bg-purple-50 text-purple-600" },
   ];
 
   return (
     <div className="space-y-8 w-full max-w-full overflow-x-hidden">
       <div>
-        <h1 className="text-2xl font-bold text-[#172126]">مرحبا بك في لوحة تحكم ابتكار الخليج</h1>
-        <p className="text-[#68777D] mt-1">إدارة ومتابعة جميع عمليات المتجر.</p>
+        <h1 className="text-2xl font-bold text-[#172126]">{t("welcome")}</h1>
+        <p className="text-[#68777D] mt-1">{t("welcomeSubtitle")}</p>
       </div>
 
       {/* Stats Grid */}
@@ -48,34 +56,51 @@ export default async function AdminDashboard() {
 
       {/* Recent Orders */}
       <AdminCard>
-        <AdminCardHeader title="أحدث الطلبات" action={<Link href="/admin/orders" className="text-sm text-[#0B5C63] font-medium hover:underline">عرض الكل</Link>} />
+        <AdminCardHeader title={t("recentOrders")} action={<Link href="/admin/orders" className="text-sm text-[#0B5C63] font-medium hover:underline">{t("viewAll")}</Link>} />
         <div className="p-4">
           {recentOrders.length === 0 ? (
-            <EmptyState title="لا توجد طلبات حتى الآن" description="ستظهر الطلبات الجديدة هنا." />
+            <EmptyState title={t("noOrders")} description={t("noOrdersDesc")} />
           ) : (
             <div className="overflow-x-auto w-full">
-              <table className="w-full text-sm min-w-[600px]">
-                <thead className="text-right text-[#68777D] border-b border-[#E8ECEE]">
+              <table className="w-full text-sm min-w-[600px] table-fixed">
+                <colgroup>
+                  <col className="w-1/4" />
+                  <col className="w-1/4" />
+                  <col className="w-1/6" />
+                  <col className="w-1/6" />
+                  <col className="w-1/6" />
+                </colgroup>
+                <thead className={`${textAlign} text-[#68777D] border-b border-[#E8ECEE]`}>
                   <tr>
-                    <th className="p-3 font-medium">رقم الطلب</th>
-                    <th className="p-3 font-medium">العميل</th>
-                    <th className="p-3 font-medium">الإجمالي</th>
-                    <th className="p-3 font-medium">الحالة</th>
-                    <th className="p-3 font-medium">التاريخ</th>
+                    <th className="p-3 font-medium">{t("table.order")}</th>
+                    <th className="p-3 font-medium">{t("table.customer")}</th>
+                    <th className="p-3 font-medium">{t("table.total")}</th>
+                    <th className="p-3 font-medium">{t("table.status")}</th>
+                    <th className="p-3 font-medium">{t("table.date")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#E8ECEE]">
                   {recentOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-[#F6F8F9]">
+                    <tr key={order.id} className={`${textAlign} hover:bg-[#F6F8F9]`}>
                       <td className="p-3 font-medium text-[#172126]">
                         <Link href={`/admin/orders/${order.id}`} className="hover:text-[#0B5C63]">
                           #{order.id.slice(-8).toUpperCase()}
                         </Link>
                       </td>
                       <td className="p-3">{order.customerName}</td>
-                      <td className="p-3 font-medium">{order.total.toFixed(3)} د.ك</td>
-                      <td className="p-3"><StatusBadge status={order.status} /></td>
-                      <td className="p-3 text-[#68777D]">{new Date(order.createdAt).toLocaleDateString('ar-EG')}</td>
+                      <td className="p-3 font-medium">{formatCurrency(order.total, locale)}</td>
+                      <td className="p-3">
+                        <span className={`px-2 py-1 text-xs rounded-full ${
+                          order.status === "COMPLETED" ? "bg-green-100 text-green-700" : 
+                          order.status === "CANCELLED" ? "bg-red-100 text-red-700" : 
+                          "bg-amber-100 text-amber-700"
+                        }`}>
+                          {getOrderStatusLabel(order.status, locale)}
+                        </span>
+                      </td>
+                      <td className="p-3 text-[#68777D]">
+                        {new Date(order.createdAt).toLocaleDateString(locale === "ar" ? "ar-EG" : "en-US")}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

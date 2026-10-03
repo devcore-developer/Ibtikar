@@ -102,7 +102,7 @@ export default function ContactClient() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1.5 text-[#172126]">{t("phoneLabel")}</label>
-                <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className={`${inputClass} ${errors.phone ? "border-red-500" : "border-[#E8ECEE]"}`} placeholder="+965 1234 5678" />
+                <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className={`${inputClass} ${errors.phone ? "border-red-500" : "border-[#E8ECEE]"}`} placeholder="+965 6569 6342" />
                 {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
               </div>
               <div>

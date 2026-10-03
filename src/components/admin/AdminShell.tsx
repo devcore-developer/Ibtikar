@@ -4,38 +4,46 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
+import { AdminLanguageSwitcher } from "./AdminLanguageSwitcher";
 import { 
   LayoutDashboard, Package, Tags, ShoppingCart, Wrench, 
   ClipboardList, Mail, Settings, LogOut, Menu, X 
 } from "lucide-react";
 
-const navItems = [
-  { href: "/admin", label: "لوحة التحكم", icon: LayoutDashboard },
-  { href: "/admin/products", label: "المنتجات", icon: Package },
-  { href: "/admin/categories", label: "التصنيفات", icon: Tags },
-  { href: "/admin/orders", label: "الطلبات", icon: ShoppingCart },
-  { href: "/admin/technicians", label: "الفنيون", icon: Wrench },
-  { href: "/admin/maintenance", label: "طلبات الصيانة", icon: ClipboardList },
-  { href: "/admin/messages", label: "الرسائل", icon: Mail },
-  { href: "/admin/settings", label: "الإعدادات", icon: Settings },
-];
-
 export function AdminShell({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("Admin");
+  const locale = useLocale();
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const isRTL = locale === "ar";
+  const sidebarPos = isRTL ? "right-0" : "left-0";
+  const mainMargin = isRTL ? "lg:mr-64" : "lg:ml-64";
+
+  const navItems = [
+    { href: "/admin", label: t("dashboard"), icon: LayoutDashboard },
+    { href: "/admin/products", label: t("products"), icon: Package },
+    { href: "/admin/categories", label: t("categories"), icon: Tags },
+    { href: "/admin/orders", label: t("orders"), icon: ShoppingCart },
+    { href: "/admin/technicians", label: t("technicians"), icon: Wrench },
+    { href: "/admin/maintenance", label: t("maintenance"), icon: ClipboardList },
+    { href: "/admin/messages", label: t("messages"), icon: Mail },
+    { href: "/admin/settings", label: t("settings"), icon: Settings },
+  ];
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-[#123B4A] text-white">
       <div className="p-6 flex items-center gap-2 border-b border-white/10">
         <Image 
           src="/logos/logo.png" 
-          alt="Ebtekar Al Khaleej Logo" 
+          alt="Ebtezar Al Khaleej Logo" 
           width={32} 
           height={32} 
           className="rounded-lg object-contain"
           priority
         />
-        <span className="font-bold text-lg text-white">ابتكار الخليج</span>
+        <span className="font-bold text-lg text-white">{t("brandName")}</span>
       </div>
 
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
@@ -56,13 +64,18 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         })}
       </nav>
 
+      {/* Admin Language Switcher */}
+      <div className="p-4 border-t border-white/10">
+        <AdminLanguageSwitcher />
+      </div>
+
       <div className="p-4 border-t border-white/10">
         <Link 
           href="/admin/login" 
           className="w-full h-10 px-4 rounded-lg text-sm font-semibold inline-flex items-center justify-center gap-2 transition-colors duration-200 focus:outline-none text-white border border-white/20 hover:bg-white/10"
         >
           <LogOut size={16} />
-          تسجيل الخروج
+          {t("logout")}
         </Link>
       </div>
     </div>
@@ -78,18 +91,18 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <div className="flex items-center gap-2">
           <Image 
             src="/logos/logo.png" 
-            alt="Ebtekar Al Khaleej Logo" 
+            alt="Ebtikar Al Khaleej Logo" 
             width={28} 
             height={28} 
             className="rounded-lg object-contain"
           />
-          <span className="font-bold text-[#172126]">لوحة التحكم</span>
+          <span className="font-bold text-[#172126]">{t("adminPanel")}</span>
         </div>
       </header>
 
       {/* Desktop Layout */}
       <div className="flex flex-1">
-        <aside className="hidden lg:block w-64 fixed top-0 bottom-0 right-0 z-30">
+        <aside className={`hidden lg:block w-64 fixed top-0 bottom-0 ${sidebarPos} z-30`}>
           <SidebarContent />
         </aside>
 
@@ -97,8 +110,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         {drawerOpen && (
           <div className="lg:hidden fixed inset-0 z-50">
             <div className="absolute inset-0 bg-black/50" onClick={() => setDrawerOpen(false)} />
-            <aside className="absolute top-0 bottom-0 right-0 w-64 z-10">
-              <button onClick={() => setDrawerOpen(false)} className="absolute top-4 left-4 text-white/70 z-10">
+            <aside className={`absolute top-0 bottom-0 ${sidebarPos} w-64 z-10`}>
+              <button onClick={() => setDrawerOpen(false)} className={`absolute top-4 ${isRTL ? "left-4" : "right-4"} text-white/70 z-10`}>
                 <X size={24} />
               </button>
               <SidebarContent />
@@ -107,7 +120,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 lg:mr-64 p-4 lg:p-8 overflow-x-hidden w-full">
+        <main className={`flex-1 ${mainMargin} p-4 lg:p-8 overflow-x-hidden w-full`}>
           {children}
         </main>
       </div>

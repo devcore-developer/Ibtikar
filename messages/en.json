@@ -179,7 +179,7 @@
     "placeOrder": "Place Order",
     "loading": "Processing...",
     "errName": "Please enter your name.",
-    "errPhone": "Please enter a valid Kuwaiti phone number.",
+    "errPhone": "Please enter your phone number.",
     "errAddress": "Please enter your address."
   },
   "Success": {
@@ -229,7 +229,7 @@
     "requestNumber": "Request Number",
     "newRequest": "Submit New Request",
     "errName": "Please enter your name.",
-    "errPhone": "Please enter a valid Kuwaiti phone number.",
+    "errPhone": "Please enter your phone number.",
     "errAddress": "Please enter your address.",
     "errAppliance": "Please enter the appliance type.",
     "errService": "Please select the requested service."
@@ -276,7 +276,119 @@
     "successTitle": "Your message has been sent",
     "successSubtitle": "Thank you for contacting us. We will get back to you as soon as possible.",
     "errName": "Please enter your name.",
-    "errPhone": "Please enter a valid Kuwaiti phone number.",
+    "errPhone": "Please enter your phone number.",
     "errMessage": "Please write your message."
+  },
+  "Admin": {
+    "brandName": "Ebtikar Al Khaleej",
+    "adminPanel": "Admin Panel",
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "categories": "Categories",
+    "orders": "Orders",
+    "technicians": "Technicians",
+    "maintenance": "Maintenance",
+    "messages": "Messages",
+    "settings": "Settings",
+    "logout": "Logout",
+    "welcome": "Welcome to Ebtikar Al Khaleej Dashboard",
+    "welcomeSubtitle": "Manage and track all store operations.",
+    "recentOrders": "Recent Orders",
+    "viewAll": "View All",
+    "noOrders": "No orders yet",
+    "noOrdersDesc": "New orders will appear here.",
+    "categoriesList": "Categories List",
+    "stats": {
+      "totalProducts": "Total Products",
+      "totalOrders": "Total Orders",
+      "pendingOrders": "Pending Orders",
+      "maintenanceRequests": "Maintenance Requests",
+      "newMessages": "New Messages",
+      "totalTechnicians": "Total Technicians"
+    },
+    "table": {
+      "order": "Order",
+      "customer": "Customer",
+      "total": "Total",
+      "status": "Status",
+      "date": "Date",
+      "nameAr": "Name (Arabic)",
+      "nameEn": "Name (English)",
+      "productCount": "Product Count",
+      "actions": "Actions",
+      "delete": "Delete",
+      "edit": "Edit"
+    },
+    "ordersPage": {
+      "title": "Manage Orders",
+      "order_id": "Order ID",
+      "customer": "Customer",
+      "total": "Total",
+      "status": "Status",
+      "date": "Date",
+      "currency": "KWD"
+    },
+    "messagesPage": {
+      "title": "Messages",
+      "inbox": "Inbox",
+      "empty": "No messages currently",
+      "mark_read": "Mark as read",
+      "delete": "Delete"
+    },
+    "productsPage": {
+      "title": "Products",
+      "add_new": "Add Product",
+      "product": "Product",
+      "category": "Category",
+      "price": "Price",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "currency": "KWD"
+    },
+    "categoriesPage": {
+      "add_new": "Add Category",
+      "error": "An error occurred.",
+      "add_new_title": "Add New Category",
+      "name_ar": "Name (Arabic)",
+      "name_en": "Name (English)",
+      "saving": "Saving...",
+      "save": "Save"
+    },
+      "techniciansPage": {
+      "add_new": "Add Technician",
+      "error": "An error occurred.",
+      "add_new_title": "Add New Technician",
+      "image": "Technician Image",
+      "name_ar": "Name (Arabic)",
+      "name_en": "Name (English)",
+      "specialty_ar": "Specialty (Arabic)",
+      "specialty_en": "Specialty (English)",
+      "services": "Services (comma separated)",
+      "phone": "Phone Number",
+      "experience": "Years of Experience",
+      "bio_ar": "Bio (Arabic)",
+      "bio_en": "Bio (English)",
+      "saving": "Saving...",
+      "save": "Save Technician",
+      "title": "Technicians",
+      "list_title": "Technicians List",
+      "name": "Name",
+      "specialty": "Specialty",
+      "empty": "No technicians found."
+    },
+    "maintenancePage": {
+      "title": "Maintenance Requests",
+      "list_title": "Incoming Requests",
+      "empty": "No maintenance requests currently",
+      "customer": "Customer",
+      "phone": "Phone",
+      "appliance": "Appliance",
+      "status": "Status",
+      "actions": "Actions",
+      "view_details": "View Details"
+    }
   }
 }

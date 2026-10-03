@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createCategory } from "@/app/admin/actions";
 import { AdminButton } from "@/components/admin/ui";
 import { Plus, X } from "lucide-react";
 
 export default function CategoriesClient() {
+  const t = useTranslations("Admin");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -20,7 +22,7 @@ export default function CategoriesClient() {
       setIsModalOpen(false);
       window.location.reload();
     } else {
-      setError(result.error || "حدث خطأ.");
+      setError(result.error || t("categoriesPage.error"));
     }
     setIsSubmitting(false);
   };
@@ -28,7 +30,7 @@ export default function CategoriesClient() {
   return (
     <>
       <AdminButton icon={Plus} onClick={() => setIsModalOpen(true)}>
-        إضافة تصنيف
+        {t("categoriesPage.add_new")}
       </AdminButton>
 
       {isModalOpen && (
@@ -38,19 +40,19 @@ export default function CategoriesClient() {
               <X size={20} />
             </button>
             <div className="p-6">
-              <h2 className="text-xl font-bold mb-4">إضافة تصنيف جديد</h2>
+              <h2 className="text-xl font-bold mb-4">{t("categoriesPage.add_new_title")}</h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm mb-1">الاسم بالعربية</label>
+                  <label className="block text-sm mb-1">{t("categoriesPage.name_ar")}</label>
                   <input name="nameAr" required className="w-full h-11 px-4 border rounded-md" />
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">الاسم بالإنجليزية</label>
+                  <label className="block text-sm mb-1">{t("categoriesPage.name_en")}</label>
                   <input name="nameEn" required className="w-full h-11 px-4 border rounded-md" />
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
                 <AdminButton type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "جاري الحفظ..." : "حفظ"}
+                  {isSubmitting ? t("categoriesPage.saving") : t("categoriesPage.save")}
                 </AdminButton>
               </form>
             </div>

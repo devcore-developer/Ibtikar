@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getLocale } from "next-intl/server";
 
 export default async function ProtectedLayout({ 
   children 
@@ -9,17 +11,21 @@ export default async function ProtectedLayout({
 }) {
   const session = await getSession();
   
-  // التأكد من تسجيل الدخول قبل السماح بالدخول للوحة التحكم
   if (!session) {
     redirect("/admin/login");
   }
 
-  // تغليف المحتوى بالـ Admin Shell الجديد
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <div dir="rtl">
-      <AdminShell>
-        {children}
-      </AdminShell>
+    <div dir={locale === "ar" ? "rtl" : "ltr"}>
+      {/* يجب أن يغلف الـ Provider الـ AdminShell نفسه وليس المحتوى الداخلي فقط */}
+      <NextIntlClientProvider locale={locale} messages={messages}>
+        <AdminShell>
+          {children}
+        </AdminShell>
+      </NextIntlClientProvider>
     </div>
   );
 }

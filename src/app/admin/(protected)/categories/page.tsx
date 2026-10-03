@@ -2,9 +2,10 @@ import { prisma } from "@/lib/prisma";
 import { AdminCard, AdminCardHeader } from "@/components/admin/ui";
 import { deleteCategory } from "@/app/admin/actions";
 import CategoriesClient from "./CategoriesClient";
+import { getTranslations } from "next-intl/server";
 
 export default async function CategoriesPage() {
-  // جلب كل التصنيفات مع عدد المنتجات المرتبطة بها
+  const t = await getTranslations("Admin");
   const categories = await prisma.category.findMany({
     include: { _count: { select: { products: true } } }
   });
@@ -12,20 +13,20 @@ export default async function CategoriesPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">التصنيفات</h1>
+        <h1 className="text-2xl font-bold">{t("categories")}</h1>
         <CategoriesClient />
       </div>
 
       <AdminCard>
-        <AdminCardHeader title="قائمة التصنيفات" />
-        <div className="overflow-x-auto">
-          <table className="w-full text-right">
+        <AdminCardHeader title={t("categoriesList")} />
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-right min-w-[600px]">
             <thead className="bg-[#F6F8F9] border-b border-[#E8ECEE]">
               <tr>
-                <th className="p-4 font-semibold">الاسم (عربي)</th>
-                <th className="p-4 font-semibold">الاسم (إنجليزي)</th>
-                <th className="p-4 font-semibold">عدد المنتجات</th>
-                <th className="p-4 font-semibold">إجراءات</th>
+                <th className="p-4 font-medium">{t("table.nameAr")}</th>
+                <th className="p-4 font-medium">{t("table.nameEn")}</th>
+                <th className="p-4 font-medium">{t("table.productCount")}</th>
+                <th className="p-4 font-medium">{t("table.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E8ECEE]">
@@ -38,7 +39,7 @@ export default async function CategoriesPage() {
                     <form action={deleteCategory}>
                       <input type="hidden" name="id" value={cat.id} />
                       <button type="submit" className="text-red-500 text-sm hover:underline font-medium">
-                        حذف
+                        {t("table.delete")}
                       </button>
                     </form>
                   </td>
@@ -47,7 +48,7 @@ export default async function CategoriesPage() {
               {categories.length === 0 && (
                 <tr>
                   <td colSpan={4} className="p-8 text-center text-[#68777D]">
-                    لا توجد تصنيفات حالياً.
+                    {t("noOrders")}
                   </td>
                 </tr>
               )}
