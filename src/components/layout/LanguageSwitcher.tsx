@@ -11,9 +11,16 @@ export function LanguageSwitcher() {
 
   const switchLocale = () => {
     const newLocale = locale === "ar" ? "en" : "ar";
-    // إزالة الـ locale القديم من الرابط
-    const path = pathname.replace(/^\/(ar|en)/, "") || "/";
-    router.push(`/${newLocale}${path}`);
+    
+    // Remove the current locale prefix from the path safely
+    // e.g., "/ar/spare-parts" -> "/spare-parts"
+    // e.g., "/ar" -> ""
+    const pathWithoutLocale = pathname.replace(/^\/(ar|en)/, "");
+    
+    // Rebuild the URL with the new locale, handling the root case
+    const newPath = `/${newLocale}${pathWithoutLocale === "" ? "" : pathWithoutLocale}`;
+    
+    router.push(newPath);
   };
 
   return (
