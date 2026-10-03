@@ -7,36 +7,44 @@ import { Button } from "@/components/ui/Button";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { companyInfo, getWhatsAppLink } from "@/config/company";
+import { createContactMessage } from "@/app/admin/actions"; // استدعاء الـ Action الحقيقي
 
 export default function ContactClient() {
   const t = useTranslations("Contact");
   const tNav = useTranslations("Navbar");
   const locale = useLocale();
 
-  const [formData, setFormData] = useState({ name: "", phone: "", email: "", subject: "", message: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const validate = () => {
+  const validate = (formData: FormData) => {
     const err: Record<string, string> = {};
-    if (!formData.name.trim()) err.name = t("errName");
-    // تم إزالة التحقق من صيغة رقم الهاتف الكويتي، نتحقق فقط إن كان الحقل فارغاً
-    if (!formData.phone.trim()) err.phone = locale === "ar" ? "يرجى إدخال رقم الهاتف." : "Please enter your phone number.";
-    if (!formData.message.trim()) err.message = t("errMessage");
+    if (!String(formData.get("name") || "").trim()) err.name = t("errName");
+    if (!String(formData.get("phone") || "").trim()) err.phone = locale === "ar" ? "يرجى إدخال رقم الهاتف." : "Please enter your phone number.";
+    if (!String(formData.get("message") || "").trim()) err.message = t("errMessage");
     setErrors(err);
     return Object.keys(err).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validate()) return;
+    const formData = new FormData(e.currentTarget);
+    
+    if (!validate(formData)) return;
     
     setLoading(true);
-    // محاكاة إرسال البيانات للسيرفر
-    await new Promise(resolve => setTimeout(resolve, 1000));
     
-    setSuccess(true);
+    // إرسال الداتا للـ Server Action الحقيقي
+    const result = await createContactMessage(formData);
+    
+    if (result.success) {
+      setSuccess(true);
+      // إعادة تعيين حقول النموذج
+      (e.target as HTMLFormElement).reset();
+    } else {
+      alert(result.error || "Failed to send message.");
+    }
     setLoading(false);
   };
 
@@ -97,25 +105,25 @@ export default function ContactClient() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="block text-sm font-medium mb-1.5 text-[#172126]">{t("name")}</label>
-                <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className={`${inputClass} ${errors.name ? "border-red-500" : "border-[#E8ECEE]"}`} />
+                <input name="name" type="text" className={`${inputClass} ${errors.name ? "border-red-500" : "border-[#E8ECEE]"}`} />
                 {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1.5 text-[#172126]">{t("phoneLabel")}</label>
-                <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className={`${inputClass} ${errors.phone ? "border-red-500" : "border-[#E8ECEE]"}`} placeholder="+965 6569 6342" />
+                <input name="phone" type="tel" className={`${inputClass} ${errors.phone ? "border-red-500" : "border-[#E8ECEE]"}`} placeholder="+965 6569 6342" />
                 {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1.5 text-[#172126]">{t("emailLabel")}</label>
-                <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className={`${inputClass} border-[#E8ECEE]`} />
+                <input name="email" type="email" className={`${inputClass} border-[#E8ECEE]`} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1.5 text-[#172126]">{t("subject")}</label>
-                <input type="text" value={formData.subject} onChange={e => setFormData({...formData, subject: e.target.value})} className={`${inputClass} border-[#E8ECEE]`} />
+                <input name="subject" type="text" className={`${inputClass} border-[#E8ECEE]`} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1.5 text-[#172126]">{t("message")}</label>
-                <textarea value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} rows={4} className={`w-full p-4 bg-[#F6F8F9] border rounded-lg text-sm focus:outline-none focus:border-[#0B5C63] focus:bg-white transition-colors ${errors.message ? "border-red-500" : "border-[#E8ECEE]"}`}></textarea>
+                <textarea name="message" rows={4} className={`w-full p-4 bg-[#F6F8F9] border rounded-lg text-sm focus:outline-none focus:border-[#0B5C63] focus:bg-white transition-colors ${errors.message ? "border-red-500" : "border-[#E8ECEE]"}`}></textarea>
                 {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
               </div>
               <Button type="submit" size="lg" className="w-full" disabled={loading}>

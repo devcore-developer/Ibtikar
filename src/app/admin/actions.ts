@@ -400,37 +400,66 @@ export async function updateSettings(formData: FormData) {
 // Public Form Actions (حفظ طلبات الصيانة والرسائل)
 // ==========================================
 export async function createMaintenanceRequest(formData: FormData) {
-  await prisma.maintenanceRequest.create({
-    data: {
-      customerName: formData.get("name") as string,
-      phone: formData.get("phone") as string,
-      area: formData.get("area") as string || "N/A",
-      address: formData.get("address") as string || "N/A",
-      applianceType: formData.get("applianceType") as string,
-      serviceId: formData.get("serviceRequired") as string,
-      brand: formData.get("brand") as string || null,
-      model: formData.get("model") as string || null,
-      problemDescription: formData.get("problemDescription") as string || null,
-      preferredContactTime: formData.get("preferredTime") as string || null,
-      notes: formData.get("notes") as string || null,
-      status: "PENDING",
-    },
-  });
-  revalidatePath("/admin/maintenance");
-  return { success: true };
+  const name = formData.get("name") as string;
+  const phone = formData.get("phone") as string;
+  const applianceType = formData.get("applianceType") as string;
+  const serviceId = formData.get("serviceRequired") as string;
+
+  // Server-side validation
+  if (!name || !phone || !applianceType || !serviceId) {
+    return { success: false, error: "Missing required fields" };
+  }
+
+  try {
+    await prisma.maintenanceRequest.create({
+      data: {
+        customerName: name,
+        phone: phone,
+        area: formData.get("area") as string || "N/A",
+        address: formData.get("address") as string || "N/A",
+        applianceType: applianceType,
+        serviceId: serviceId,
+        brand: formData.get("brand") as string || null,
+        model: formData.get("model") as string || null,
+        problemDescription: formData.get("problemDescription") as string || null,
+        preferredContactTime: formData.get("preferredTime") as string || null,
+        notes: formData.get("notes") as string || null,
+        status: "PENDING",
+      },
+    });
+    revalidatePath("/admin/maintenance");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to create maintenance request:", error);
+    return { success: false, error: "Failed to submit request." };
+  }
 }
 
 export async function createContactMessage(formData: FormData) {
-  await prisma.contactMessage.create({
-    data: {
-      name: formData.get("name") as string,
-      phone: formData.get("phone") as string,
-      email: formData.get("email") as string || null,
-      subject: formData.get("subject") as string || null,
-      message: formData.get("message") as string,
-      isRead: false,
-    },
-  });
-  revalidatePath("/admin/messages");
-  return { success: true };
+  const name = formData.get("name") as string;
+  const phone = formData.get("phone") as string;
+  const message = formData.get("message") as string;
+
+  // Server-side validation
+  if (!name || !phone || !message) {
+    return { success: false, error: "Missing required fields" };
+  }
+
+  try {
+    await prisma.contactMessage.create({
+      data: {
+        name,
+        phone,
+        email: formData.get("email") as string || null,
+        subject: formData.get("subject") as string || null,
+        message,
+        isRead: false,
+      },
+    });
+    revalidatePath("/admin/messages");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to create contact message:", error);
+    return { success: false, error: "Failed to send message." };
+  }
 }
