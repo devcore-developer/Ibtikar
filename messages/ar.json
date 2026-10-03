@@ -348,7 +348,9 @@
       "deactivate": "تعطيل",
       "currency": "د.ك",
       "edit_title": "تعديل المنتج",
-      "save_changes": "حفظ التغييرات"
+      "save_changes": "حفظ التغييرات",
+      "name_ar": "الاسم (عربي)",
+      "name_en": "الاسم (إنجليزي)"
     },
     "categoriesPage": {
       "title": "التصنيفات",

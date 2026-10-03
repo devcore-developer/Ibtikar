@@ -348,7 +348,9 @@
       "deactivate": "Deactivate",
       "currency": "KWD",
       "edit_title": "Edit Product",
-      "save_changes": "Save Changes"
+      "save_changes": "Save Changes",
+      "name_ar": "Name (Arabic)",
+      "name_en": "Name (English)"
     },
     "categoriesPage": {
       "title": "Categories",

@@ -3,7 +3,7 @@ import { deleteProduct, toggleProductStatus } from "@/app/admin/actions";
 import { getTranslations, getLocale } from "next-intl/server";
 import { getLocalizedField } from "@/lib/localization";
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { Pencil, Power, Trash2 } from "lucide-react";
 
 export default async function AdminProductsPage() {
   const t = await getTranslations("Admin");
@@ -15,6 +15,7 @@ export default async function AdminProductsPage() {
 
   return (
     <div>
+      {/* Header - Stacked on mobile */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold text-foreground">{t("productsPage.title")}</h1>
         <Link href="/admin/products/new" className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 w-full md:w-auto text-center">
@@ -22,7 +23,7 @@ export default async function AdminProductsPage() {
         </Link>
       </div>
 
-      {/* Desktop Table */}
+      {/* Desktop Table (Hidden on mobile) */}
       <div className="hidden md:block bg-surface border border-border rounded-lg overflow-hidden">
         <table className="w-full min-w-[600px] table-fixed">
           <colgroup>
@@ -52,20 +53,20 @@ export default async function AdminProductsPage() {
                     {p.isActive ? t("productsPage.active") : t("productsPage.inactive")}
                   </span>
                 </td>
-                <td className="p-4 flex gap-3">
-                  <Link href={`/admin/products/${p.id}/edit`} className="text-blue-500 text-sm hover:underline font-medium flex items-center gap-1">
-                    <Pencil size={14} /> {t("table.edit")}
+                <td className="p-4 flex gap-2 items-center">
+                  <Link href={`/admin/products/${p.id}/edit`} className="p-2 rounded-md hover:bg-gray-100 text-[#68777D]" title={t("table.edit")}>
+                    <Pencil size={16} />
                   </Link>
                   <form action={toggleProductStatus}>
                     <input type="hidden" name="id" value={p.id} />
-                    <button type="submit" className="text-blue-500 text-sm hover:underline">
-                      {p.isActive ? t("productsPage.deactivate") : t("productsPage.activate")}
+                    <button type="submit" className="p-2 rounded-md hover:bg-gray-100 text-[#68777D]" title={p.isActive ? t("productsPage.deactivate") : t("productsPage.activate")}>
+                      <Power size={16} />
                     </button>
                   </form>
                   <form action={deleteProduct}>
                     <input type="hidden" name="id" value={p.id} />
-                    <button type="submit" className="text-red-500 text-sm hover:underline">
-                      {t("table.delete")}
+                    <button type="submit" className="p-2 rounded-md hover:bg-red-50 text-red-400" title={t("table.delete")}>
+                      <Trash2 size={16} />
                     </button>
                   </form>
                 </td>
@@ -75,7 +76,7 @@ export default async function AdminProductsPage() {
         </table>
       </div>
 
-      {/* Mobile Cards */}
+      {/* Mobile Cards (Visible on mobile only) */}
       <div className="md:hidden space-y-4">
         {products.map((p) => (
           <div key={p.id} className="bg-white border border-[#E8ECEE] rounded-lg p-4 shadow-sm">
@@ -97,18 +98,18 @@ export default async function AdminProductsPage() {
               </span>
               <div className="flex gap-2">
                 <Link href={`/admin/products/${p.id}/edit`} className="p-2 rounded-md hover:bg-gray-100" title={t("table.edit")}>
-                  <Pencil size={18} className="text-blue-500" />
+                  <Pencil size={18} className="text-[#68777D]" />
                 </Link>
                 <form action={toggleProductStatus}>
                   <input type="hidden" name="id" value={p.id} />
                   <button type="submit" className="p-2 rounded-md hover:bg-gray-100" title={p.isActive ? t("productsPage.deactivate") : t("productsPage.activate")}>
-                    <span className="text-blue-500 text-sm font-medium">{p.isActive ? "Deactivate" : "Activate"}</span>
+                    <Power size={18} className="text-[#68777D]" />
                   </button>
                 </form>
                 <form action={deleteProduct}>
                   <input type="hidden" name="id" value={p.id} />
-                  <button type="submit" className="p-2 rounded-md hover:bg-gray-100" title={t("table.delete")}>
-                    <span className="text-red-500 text-sm font-medium">{t("table.delete")}</span>
+                  <button type="submit" className="p-2 rounded-md hover:bg-red-50" title={t("table.delete")}>
+                    <Trash2 size={18} className="text-red-400" />
                   </button>
                 </form>
               </div>
