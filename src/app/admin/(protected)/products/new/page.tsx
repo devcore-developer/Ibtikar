@@ -8,7 +8,7 @@ export default async function NewProductPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-foreground mb-8">إضافة منتج جديد</h1>
-      <ProductForm categories={categories} />
+      <ProductForm mode="create" categories={JSON.parse(JSON.stringify(categories))} />
     </div>
   );
 }
