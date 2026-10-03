@@ -399,11 +399,11 @@ export async function updateSettings(formData: FormData) {
 // ==========================================
 // Public Form Actions (حفظ طلبات الصيانة والرسائل)
 // ==========================================
-export async function createMaintenanceRequest(formData: FormData) {
+export async function createMaintenanceRequest(prevState: any, formData: FormData) {
   const name = formData.get("name") as string;
   const phone = formData.get("phone") as string;
   const applianceType = formData.get("applianceType") as string;
-  const serviceId = formData.get("serviceRequired") as string;
+  const serviceId = formData.get("serviceId") as string;
 
   // Server-side validation
   if (!name || !phone || !applianceType || !serviceId) {
