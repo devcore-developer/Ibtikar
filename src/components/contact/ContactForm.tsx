@@ -1,42 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { Mail } from "lucide-react";
 import { createContactMessage } from "@/app/admin/actions";
+
 export function ContactForm() {
   const t = useTranslations("Contact");
+  const [state, formAction, pending] = useActionState(createContactMessage, { success: false });
   const [formData, setFormData] = useState({ name: "", phone: "", email: "", subject: "", message: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (state?.success) {
+      setSuccess(true);
+      setFormData({ name: "", phone: "", email: "", subject: "", message: "" });
+    }
+  }, [state]);
 
   const validate = () => {
     const err: Record<string, string> = {};
     if (!formData.name.trim()) err.name = t("errName");
-    
-    // تم إزالة التحقق من صيغة رقم الهاتف الكويتي، نتحقق فقط إن كان الحقل فارغاً
-    if (!formData.phone.trim()) {
-      err.phone = "يرجى إدخال رقم الهاتف."; 
-    }
-    
+    if (!formData.phone.trim()) err.phone = "يرجى إدخال رقم الهاتف."; 
     if (!formData.message.trim()) err.message = t("errMessage");
     setErrors(err);
     return Object.keys(err).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
-    setLoading(true);
-    
-    // إرسال البيانات للسيرفر لحفظها
-    const formDataObj = new FormData(e.currentTarget as HTMLFormElement);
-    await createContactMessage(formDataObj);
-    
-    setSuccess(true);
-    setLoading(false);
+  const handleSubmit = (e: React.FormEvent) => {
+    if (!validate()) {
+      e.preventDefault(); // منع الإرسال لو فيه أخطاء
+    }
   };
 
   const inputClass = "w-full h-12 px-4 bg-[#F6F8F9] border rounded-lg text-sm focus:outline-none focus:border-[#0B5C63] focus:bg-white transition-colors";
@@ -57,12 +53,13 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form action={formAction} onSubmit={handleSubmit} className="space-y-6">
       {/* الصف الأول: الاسم ورقم الهاتف */}
       <div className="grid sm:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium mb-2 text-[#172126]">{t("name")}</label>
           <input 
+            name="name"
             type="text" 
             value={formData.name} 
             onChange={e => setFormData({...formData, name: e.target.value})} 
@@ -73,6 +70,7 @@ export function ContactForm() {
         <div>
           <label className="block text-sm font-medium mb-2 text-[#172126]">{t("phoneLabel")}</label>
           <input 
+            name="phone"
             type="tel" 
             value={formData.phone} 
             onChange={e => setFormData({...formData, phone: e.target.value})} 
@@ -88,6 +86,7 @@ export function ContactForm() {
         <div>
           <label className="block text-sm font-medium mb-2 text-[#172126]">{t("emailLabel")}</label>
           <input 
+            name="email"
             type="email" 
             value={formData.email} 
             onChange={e => setFormData({...formData, email: e.target.value})} 
@@ -97,6 +96,7 @@ export function ContactForm() {
         <div>
           <label className="block text-sm font-medium mb-2 text-[#172126]">{t("subject")}</label>
           <input 
+            name="subject"
             type="text" 
             value={formData.subject} 
             onChange={e => setFormData({...formData, subject: e.target.value})} 
@@ -109,6 +109,7 @@ export function ContactForm() {
       <div>
         <label className="block text-sm font-medium mb-2 text-[#172126]">{t("message")}</label>
         <textarea 
+          name="message"
           value={formData.message} 
           onChange={e => setFormData({...formData, message: e.target.value})} 
           rows={5} 
@@ -119,8 +120,8 @@ export function ContactForm() {
       
       {/* زر الإرسال (عرض كامل) */}
       <div className="flex justify-center">
-        <Button type="submit" size="lg" className="w-full sm:w-auto px-10" disabled={loading}>
-          {loading ? t("sending") : t("send")}
+        <Button type="submit" size="lg" className="w-full sm:w-auto px-10" disabled={pending}>
+          {pending ? t("sending") : t("send")}
         </Button>
       </div>
     </form>

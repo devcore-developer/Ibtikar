@@ -435,7 +435,7 @@ export async function createMaintenanceRequest(formData: FormData) {
   }
 }
 
-export async function createContactMessage(formData: FormData) {
+export async function createContactMessage(prevState: any, formData: FormData) {
   const name = formData.get("name") as string;
   const phone = formData.get("phone") as string;
   const message = formData.get("message") as string;
@@ -461,5 +461,52 @@ export async function createContactMessage(formData: FormData) {
   } catch (error) {
     console.error("Failed to create contact message:", error);
     return { success: false, error: "Failed to send message." };
+  }
+}
+// ==========================================
+// Category Actions (إضافة toggleCategoryStatus)
+// ==========================================
+export async function toggleCategoryStatus(formData: FormData) {
+  const id = formData.get("id") as string;
+  const category = await prisma.category.findUnique({ where: { id } });
+  if (category) {
+    await prisma.category.update({ where: { id }, data: { isActive: !category.isActive } });
+  }
+  revalidatePath("/admin/categories");
+  revalidatePath("/[locale]/spare-parts", "page");
+}
+
+// ==========================================
+// Product Actions (إضافة updateProduct)
+// ==========================================
+export async function updateProduct(formData: FormData) {
+  const id = formData.get("id") as string;
+  
+  try {
+    await prisma.product.update({
+      where: { id },
+      data: {
+        nameAr: formData.get("nameAr") as string,
+        nameEn: formData.get("nameEn") as string,
+        // لا نقوم بتحديث الـ slug للحفاظ على روابط المنتج القديمة في محركات البحث
+        descriptionAr: formData.get("descriptionAr") as string || null,
+        descriptionEn: formData.get("descriptionEn") as string || null,
+        price: parseFloat(formData.get("price") as string),
+        categoryId: formData.get("categoryId") as string,
+        partNumber: formData.get("partNumber") as string || null,
+        brand: formData.get("brand") as string || null,
+        image: formData.get("image") as string || null,
+      },
+    });
+    
+    revalidatePath("/admin/products");
+    revalidatePath("/[locale]", "page");
+    revalidatePath("/[locale]/spare-parts", "page");
+    revalidatePath("/[locale]/product/[slug]", "page");
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update product:", error);
+    return { success: false, error: "Failed to update product." };
   }
 }

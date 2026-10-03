@@ -346,9 +346,13 @@
       "inactive": "Inactive",
       "activate": "Activate",
       "deactivate": "Deactivate",
-      "currency": "KWD"
+      "currency": "KWD",
+      "edit_title": "Edit Product",
+      "save_changes": "Save Changes"
     },
     "categoriesPage": {
+      "title": "Categories",
+      "list_title": "Categories List",
       "add_new": "Add Category",
       "error": "An error occurred.",
       "add_new_title": "Add New Category",
@@ -357,7 +361,7 @@
       "saving": "Saving...",
       "save": "Save"
     },
-      "techniciansPage": {
+    "techniciansPage": {
       "add_new": "Add Technician",
       "error": "An error occurred.",
       "add_new_title": "Add New Technician",

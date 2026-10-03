@@ -41,7 +41,7 @@ export default async function AdminDashboard() {
         <p className="text-[#68777D] mt-1">{t("welcomeSubtitle")}</p>
       </div>
 
-      {/* Stats Grid */}
+      {/* Stats Grid - 2 columns on mobile, auto scales on desktop */}
       <div className="grid grid-cols-2 gap-3 w-full max-w-full">
         {stats.map((stat) => (
           <AdminCard key={stat.label} className="p-4 w-full min-w-0 overflow-hidden">
@@ -61,51 +61,79 @@ export default async function AdminDashboard() {
           {recentOrders.length === 0 ? (
             <EmptyState title={t("noOrders")} description={t("noOrdersDesc")} />
           ) : (
-            <div className="overflow-x-auto w-full">
-              <table className="w-full text-sm min-w-[600px] table-fixed">
-                <colgroup>
-                  <col className="w-1/4" />
-                  <col className="w-1/4" />
-                  <col className="w-1/6" />
-                  <col className="w-1/6" />
-                  <col className="w-1/6" />
-                </colgroup>
-                <thead className={`${textAlign} text-[#68777D] border-b border-[#E8ECEE]`}>
-                  <tr>
-                    <th className="p-3 font-medium">{t("table.order")}</th>
-                    <th className="p-3 font-medium">{t("table.customer")}</th>
-                    <th className="p-3 font-medium">{t("table.total")}</th>
-                    <th className="p-3 font-medium">{t("table.status")}</th>
-                    <th className="p-3 font-medium">{t("table.date")}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#E8ECEE]">
-                  {recentOrders.map((order) => (
-                    <tr key={order.id} className={`${textAlign} hover:bg-[#F6F8F9]`}>
-                      <td className="p-3 font-medium text-[#172126]">
-                        <Link href={`/admin/orders/${order.id}`} className="hover:text-[#0B5C63]">
-                          #{order.id.slice(-8).toUpperCase()}
-                        </Link>
-                      </td>
-                      <td className="p-3">{order.customerName}</td>
-                      <td className="p-3 font-medium">{formatCurrency(order.total, locale)}</td>
-                      <td className="p-3">
-                        <span className={`px-2 py-1 text-xs rounded-full ${
-                          order.status === "COMPLETED" ? "bg-green-100 text-green-700" : 
-                          order.status === "CANCELLED" ? "bg-red-100 text-red-700" : 
-                          "bg-amber-100 text-amber-700"
-                        }`}>
-                          {getOrderStatusLabel(order.status, locale)}
-                        </span>
-                      </td>
-                      <td className="p-3 text-[#68777D]">
-                        {new Date(order.createdAt).toLocaleDateString(locale === "ar" ? "ar-EG" : "en-US")}
-                      </td>
+            <>
+              {/* Desktop Table (Hidden on mobile) */}
+              <div className="hidden md:block overflow-x-auto w-full">
+                <table className="w-full text-sm min-w-[600px] table-fixed">
+                  <colgroup>
+                    <col className="w-1/4" />
+                    <col className="w-1/4" />
+                    <col className="w-1/6" />
+                    <col className="w-1/6" />
+                    <col className="w-1/6" />
+                  </colgroup>
+                  <thead className={`${textAlign} text-[#68777D] border-b border-[#E8ECEE]`}>
+                    <tr>
+                      <th className="p-3 font-medium">{t("table.order")}</th>
+                      <th className="p-3 font-medium">{t("table.customer")}</th>
+                      <th className="p-3 font-medium">{t("table.total")}</th>
+                      <th className="p-3 font-medium">{t("table.status")}</th>
+                      <th className="p-3 font-medium">{t("table.date")}</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-[#E8ECEE]">
+                    {recentOrders.map((order) => (
+                      <tr key={order.id} className={`${textAlign} hover:bg-[#F6F8F9]`}>
+                        <td className="p-3 font-medium text-[#172126]">
+                          <Link href={`/admin/orders/${order.id}`} className="hover:text-[#0B5C63]">
+                            #{order.id.slice(-8).toUpperCase()}
+                          </Link>
+                        </td>
+                        <td className="p-3">{order.customerName}</td>
+                        <td className="p-3 font-medium">{formatCurrency(order.total, locale)}</td>
+                        <td className="p-3">
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            order.status === "COMPLETED" ? "bg-green-100 text-green-700" : 
+                            order.status === "CANCELLED" ? "bg-red-100 text-red-700" : 
+                            "bg-amber-100 text-amber-700"
+                          }`}>
+                            {getOrderStatusLabel(order.status, locale)}
+                          </span>
+                        </td>
+                        <td className="p-3 text-[#68777D]">
+                          {new Date(order.createdAt).toLocaleDateString(locale === "ar" ? "ar-EG" : "en-US")}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards (Visible on mobile only) */}
+              <div className="md:hidden space-y-4">
+                {recentOrders.map((order) => (
+                  <div key={order.id} className="bg-white border border-[#E8ECEE] rounded-lg p-4 shadow-sm">
+                    <div className="flex justify-between items-start mb-2">
+                      <Link href={`/admin/orders/${order.id}`} className="font-mono text-[#0B5C63] text-sm font-medium">
+                        #{order.id.slice(-8).toUpperCase()}
+                      </Link>
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        order.status === "COMPLETED" ? "bg-green-100 text-green-700" : 
+                        order.status === "CANCELLED" ? "bg-red-100 text-red-700" : 
+                        "bg-amber-100 text-amber-700"
+                      }`}>
+                        {getOrderStatusLabel(order.status, locale)}
+                      </span>
+                    </div>
+                    <h3 className="font-semibold text-[#172126] truncate">{order.customerName}</h3>
+                    <div className="flex justify-between items-center mt-2 text-sm text-[#68777D]">
+                      <span>{formatCurrency(order.total, locale)}</span>
+                      <span>{new Date(order.createdAt).toLocaleDateString(locale === "ar" ? "ar-EG" : "en-US")}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </AdminCard>

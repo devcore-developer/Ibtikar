@@ -1,86 +1,107 @@
 "use client";
 
 import { useState } from "react";
-import { createProduct } from "@/app/admin/actions";
+import { useRouter } from "next/navigation";
+import { createProduct, updateProduct } from "@/app/admin/actions";
 import { ImageUpload } from "@/components/admin/ImageUpload";
-import { generateSlug } from "@/lib/utils";
+import { Button } from "@/components/ui/Button";
+import { useTranslations } from "next-intl";
 
-export function ProductForm({ categories }: { categories: any[] }) {
-  const [imageUrl, setImageUrl] = useState("");
+export default function ProductForm({ mode, product, categories }: { 
+  mode: "create" | "edit"; 
+  product?: any; 
+  categories: any[];
+}) {
+  const t = useTranslations("Admin");
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [nameEn, setNameEn] = useState("");
+  const [error, setError] = useState("");
+  const [imageUrl, setImageUrl] = useState(product?.image || "");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError("");
+    
     const formData = new FormData(e.currentTarget);
     formData.append("image", imageUrl);
-    formData.append("slug", generateSlug(nameEn)); // Auto-generate slug
-
+    
     try {
-      await createProduct(formData);
-      window.location.href = "/admin/products";
-    } catch (error) {
-      console.error("Failed to create product", error);
+      let result;
+      if (mode === "create") {
+        result = await createProduct(formData);
+      } else {
+        result = await updateProduct(formData);
+      }
+
+      if (result?.success) {
+        router.push("/admin/products");
+        router.refresh();
+      } else {
+        setError(result?.error || "Failed to save product.");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred.");
+    } finally {
       setIsSubmitting(false);
     }
   };
 
+  const inputClass = "w-full h-11 px-4 border border-[#E8ECEE] rounded-md bg-[#F6F8F9] focus:outline-none focus:border-[#0B5C63] focus:bg-white transition-colors";
+
   return (
-    <form onSubmit={handleSubmit} className="bg-surface p-6 border border-border rounded-lg max-w-2xl space-y-4">
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">الاسم بالعربية</label>
-          <input name="nameAr" required className="w-full h-11 px-4 border border-border rounded-md" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">الاسم بالإنجليزية</label>
-          <input 
-            name="nameEn" 
-            required 
-            value={nameEn}
-            onChange={(e) => setNameEn(e.target.value)}
-            className="w-full h-11 px-4 border border-border rounded-md" 
-          />
-        </div>
-      </div>
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+      {mode === "edit" && (
+        <input type="hidden" name="id" value={product.id} />
+      )}
       
-      {/* Slug field is hidden and auto-generated */}
-      <input type="hidden" name="slug" value={generateSlug(nameEn)} />
-
-      <div>
-        <label className="block text-sm font-medium mb-2">صورة المنتج</label>
-        <ImageUpload onImageChange={(url) => setImageUrl(url)} />
-      </div>
-
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium mb-1">السعر (د.ك)</label>
-          <input name="price" type="number" step="0.001" required className="w-full h-11 px-4 border border-border rounded-md" />
+          <label className="block text-sm font-medium mb-2">{t("productsPage.name_ar")}</label>
+          <input name="nameAr" defaultValue={product?.nameAr || ""} required className={inputClass} />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">التصنيف</label>
-          <select name="categoryId" required defaultValue="" className="w-full h-11 px-4 border border-border rounded-md bg-white">
-            <option value="" disabled>اختر التصنيف...</option>
-            {categories.map((c) => (
-                <option key={c.id} value={c.id}>{c.nameAr} - {c.nameEn}</option>
-            ))}
-          </select>
+          <label className="block text-sm font-medium mb-2">{t("productsPage.name_en")}</label>
+          <input name="nameEn" defaultValue={product?.nameEn || ""} required className={inputClass} />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">الوصف بالعربية</label>
-        <textarea name="descriptionAr" rows={3} className="w-full p-2 border border-border rounded-md"></textarea>
+        <label className="block text-sm font-medium mb-2">{t("productsPage.category")}</label>
+        <select name="categoryId" defaultValue={product?.categoryId || ""} required className={inputClass}>
+          <option value="" disabled>Select Category</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>{cat.nameEn} - {cat.nameAr}</option>
+          ))}
+        </select>
       </div>
+
+      <div className="grid sm:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">{t("productsPage.price")}</label>
+          <input name="price" type="number" step="0.001" defaultValue={product?.price || ""} required className={inputClass} />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-2">Brand</label>
+          <input name="brand" defaultValue={product?.brand || ""} className={inputClass} />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Image</label>
+        <ImageUpload onImageChange={(url) => setImageUrl(url)} existingImage={imageUrl} />
+      </div>
+
+      {error && <p className="text-red-500 text-sm">{error}</p>}
       
-      <button 
-        type="submit" 
-        disabled={isSubmitting} 
-        className="h-11 px-6 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50"
-      >
-        {isSubmitting ? "جاري الحفظ..." : "حفظ المنتج"}
-      </button>
+      <div className="flex gap-4">
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? t("techniciansPage.saving") : (mode === "edit" ? t("productsPage.save_changes") : t("productsPage.add_new"))}
+        </Button>
+        <Button type="button" variant="outline" onClick={() => router.push("/admin/products")}>
+          Cancel
+        </Button>
+      </div>
     </form>
   );
 }

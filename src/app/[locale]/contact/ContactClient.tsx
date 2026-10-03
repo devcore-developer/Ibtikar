@@ -1,22 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useActionState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { companyInfo, getWhatsAppLink } from "@/config/company";
-import { createContactMessage } from "@/app/admin/actions"; // استدعاء الـ Action الحقيقي
+import { createContactMessage } from "@/app/admin/actions";
 
 export default function ContactClient() {
   const t = useTranslations("Contact");
   const tNav = useTranslations("Navbar");
   const locale = useLocale();
 
+  // استخدام useActionState لربط الـ Server Action بالـ Form
+  const [state, formAction, pending] = useActionState(createContactMessage, { success: false });
+  
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (state?.success) {
+      setSuccess(true);
+    }
+  }, [state]);
 
   const validate = (formData: FormData) => {
     const err: Record<string, string> = {};
@@ -27,25 +35,12 @@ export default function ContactClient() {
     return Object.keys(err).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
-    
-    if (!validate(formData)) return;
-    
-    setLoading(true);
-    
-    // إرسال الداتا للـ Server Action الحقيقي
-    const result = await createContactMessage(formData);
-    
-    if (result.success) {
-      setSuccess(true);
-      // إعادة تعيين حقول النموذج
-      (e.target as HTMLFormElement).reset();
-    } else {
-      alert(result.error || "Failed to send message.");
+    // لو الـ Validation فشل، نمنع الـ Form إنه يـ Submit
+    if (!validate(formData)) {
+      e.preventDefault();
     }
-    setLoading(false);
   };
 
   const inputClass = "w-full h-11 px-4 bg-[#F6F8F9] border rounded-lg text-sm focus:outline-none focus:border-[#0B5C63] focus:bg-white transition-colors";
@@ -66,10 +61,8 @@ export default function ContactClient() {
         <p className="text-[#68777D] max-w-2xl mx-auto">{t("subtitle")}</p>
       </div>
 
-      {/* تخطيط متوازن: معلومات التواصل + النموذج */}
       <div className="grid lg:grid-cols-2 gap-8 items-stretch">
         
-        {/* بطاقات التواصل (شبكة 2×2) */}
         <div className="grid grid-cols-2 gap-4">
           {contactCards.map((card, i) => (
             <a 
@@ -88,7 +81,6 @@ export default function ContactClient() {
           ))}
         </div>
 
-        {/* نموذج التواصل */}
         <div className="bg-white border border-[#E8ECEE] rounded-lg p-6 md:p-8 shadow-sm">
           {success ? (
             <div className="text-center py-12">
@@ -102,7 +94,7 @@ export default function ContactClient() {
               </Button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form action={formAction} onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="block text-sm font-medium mb-1.5 text-[#172126]">{t("name")}</label>
                 <input name="name" type="text" className={`${inputClass} ${errors.name ? "border-red-500" : "border-[#E8ECEE]"}`} />
@@ -126,8 +118,8 @@ export default function ContactClient() {
                 <textarea name="message" rows={4} className={`w-full p-4 bg-[#F6F8F9] border rounded-lg text-sm focus:outline-none focus:border-[#0B5C63] focus:bg-white transition-colors ${errors.message ? "border-red-500" : "border-[#E8ECEE]"}`}></textarea>
                 {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
               </div>
-              <Button type="submit" size="lg" className="w-full" disabled={loading}>
-                {loading ? t("sending") : t("send")}
+              <Button type="submit" size="lg" className="w-full" disabled={pending}>
+                {pending ? t("sending") : t("send")}
               </Button>
             </form>
           )}

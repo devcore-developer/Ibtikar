@@ -346,9 +346,13 @@
       "inactive": "معطّل",
       "activate": "تفعيل",
       "deactivate": "تعطيل",
-      "currency": "د.ك"
+      "currency": "د.ك",
+      "edit_title": "تعديل المنتج",
+      "save_changes": "حفظ التغييرات"
     },
     "categoriesPage": {
+      "title": "التصنيفات",
+      "list_title": "قائمة التصنيفات",
       "add_new": "إضافة تصنيف",
       "error": "حدث خطأ.",
       "add_new_title": "إضافة تصنيف جديد",
@@ -357,7 +361,7 @@
       "saving": "جاري الحفظ...",
       "save": "حفظ"
     },
-      "techniciansPage": {
+    "techniciansPage": {
       "add_new": "إضافة فني",
       "error": "حدث خطأ.",
       "add_new_title": "إضافة فني جديد",

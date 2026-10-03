@@ -53,6 +53,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
+              // ده التعديل الوحيد: إغلاق القائمة عند الضغط على أي لينك
+              onClick={() => setDrawerOpen(false)}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive ? "bg-[#0B5C63] text-white" : "text-white/70 hover:bg-white/5 hover:text-white"
               }`}
@@ -72,6 +74,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <div className="p-4 border-t border-white/10">
         <Link 
           href="/admin/login" 
+          onClick={() => setDrawerOpen(false)} // إغلاق القائمة عند تسجيل الخروج
           className="w-full h-10 px-4 rounded-lg text-sm font-semibold inline-flex items-center justify-center gap-2 transition-colors duration-200 focus:outline-none text-white border border-white/20 hover:bg-white/10"
         >
           <LogOut size={16} />
