@@ -67,25 +67,51 @@ export async function uploadImageAction(formData: FormData) {
 // Product Actions
 // ==========================================
 export async function createProduct(formData: FormData) {
-  await prisma.product.create({
-    data: {
-      nameAr: formData.get("nameAr") as string,
-      nameEn: formData.get("nameEn") as string,
-      slug: formData.get("slug") as string,
-      descriptionAr: formData.get("descriptionAr") as string,
-      descriptionEn: formData.get("descriptionEn") as string,
-      price: parseFloat(formData.get("price") as string),
-      categoryId: formData.get("categoryId") as string,
-      partNumber: formData.get("partNumber") as string || null,
-      brand: formData.get("brand") as string || null,
-      image: formData.get("image") as string || null,
-    },
-  });
-  revalidatePath("/admin/products");
-  revalidatePath("/[locale]", "page");
-  revalidatePath("/[locale]/spare-parts", "page");
-}
+  try {
+    const nameEn = formData.get("nameEn") as string;
+    // توليد الـ Slug تلقائياً زي ما بنعمل في الفنيين والأقسام
+    let slug = generateSlug(nameEn);
+    
+    // Fallback لو الـ slug فاضي
+    if (!slug || slug.trim() === "") {
+      slug = generateSlug(formData.get("nameAr") as string);
+    }
+    if (!slug || slug.trim() === "") {
+      slug = `product-${Date.now().toString().slice(-4)}`;
+    }
 
+    // التأكد من عدم تكرار الـ Slug
+    const existing = await prisma.product.findUnique({ where: { slug } });
+    if (existing) {
+      slug = `${slug}-${Date.now().toString().slice(-4)}`;
+    }
+
+    await prisma.product.create({
+      data: {
+        nameAr: formData.get("nameAr") as string,
+        nameEn: nameEn,
+        slug: slug, // هنا بنستخدم الـ Slug المتولد
+        descriptionAr: formData.get("descriptionAr") as string || null,
+        descriptionEn: formData.get("descriptionEn") as string || null,
+        price: parseFloat(formData.get("price") as string),
+        categoryId: formData.get("categoryId") as string,
+        partNumber: formData.get("partNumber") as string || null,
+        brand: formData.get("brand") as string || null,
+        image: formData.get("image") as string || null,
+      },
+    });
+    
+    revalidatePath("/admin/products");
+    revalidatePath("/[locale]", "page");
+    revalidatePath("/[locale]/spare-parts", "page");
+    revalidatePath("/[locale]/product/[slug]", "page");
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to create product:", error);
+    return { success: false, error: "Failed to create product." };
+  }
+}
 export async function toggleProductStatus(formData: FormData) {
   const id = formData.get("id") as string;
   const product = await prisma.product.findUnique({ where: { id } });
