@@ -1,12 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { encrypt, getSession } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { generateSlug } from "@/lib/utils";
 import { uploadImageToR2, MAX_IMAGE_BYTES } from "@/lib/r2";
+import { getServiceBySlug } from "@/data/maintenance-services";
+import { notifyNewSparePartsOrder, notifyNewMaintenanceRequest } from "@/lib/notify";
 
 // ==========================================
 // Auth Actions
@@ -294,6 +297,25 @@ export async function createOrder(formData: FormData) {
         },
       },
     });
+
+    // 🔔 إشعار صاحب المتجر (ntfy) — بيتم جدولته بعد نجاح إنشاء الطلب في قاعدة
+    // البيانات فقط. after() بيشتغل بعد ما الرد يوصل للعميل، فمفيش أي تأخير على
+    // الكاشير، وأي فشل في ntfy مش هيأثر أبداً على الطلب اللي اتحفظ بنجاح.
+    try {
+      after(async () => {
+        await notifyNewSparePartsOrder({
+          orderId: order.id,
+          customerName: order.customerName,
+          itemCount: items.reduce(
+            (sum: number, item: any) => sum + (Number(item?.quantity) || 0),
+            0
+          ),
+          total: order.total,
+        });
+      });
+    } catch (notificationError) {
+      console.error("[ntfy] failed to schedule order notification:", notificationError);
+    }
     
     revalidatePath("/admin/orders");
     revalidatePath(`/admin/orders/${order.id}`);
@@ -430,7 +452,7 @@ export async function createMaintenanceRequest(prevState: any, formData: FormDat
   }
 
   try {
-    await prisma.maintenanceRequest.create({
+    const createdRequest = await prisma.maintenanceRequest.create({
       data: {
         customerName: name,
         phone: phone,
@@ -446,6 +468,23 @@ export async function createMaintenanceRequest(prevState: any, formData: FormDat
         status: "PENDING",
       },
     });
+
+    // 🔔 إشعار صاحب المتجر (ntfy) — بيتم جدولته بعد نجاح حفظ الطلب فقط.
+    // after() بيشتغل بعد ما الرد يوصل للعميل، وأي فشل في ntfy مش هيأثر
+    // أبداً على نجاح الحفظ أو على الرد اللي بيرجع للفورم.
+    try {
+      after(async () => {
+        await notifyNewMaintenanceRequest({
+          requestId: createdRequest.id,
+          customerName: createdRequest.customerName,
+          applianceType: createdRequest.applianceType,
+          serviceName: getServiceBySlug(createdRequest.serviceId)?.nameEn ?? createdRequest.serviceId,
+        });
+      });
+    } catch (notificationError) {
+      console.error("[ntfy] failed to schedule maintenance notification:", notificationError);
+    }
+
     revalidatePath("/admin/maintenance");
     return { success: true };
   } catch (error) {
