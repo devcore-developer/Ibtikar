@@ -5,6 +5,7 @@ import TechniciansClient from "./TechniciansClient";
 import Link from "next/link";
 import { getTranslations, getLocale } from "next-intl/server";
 import { getLocalizedField } from "@/lib/localization";
+import { SmartImage } from "@/components/ui/SmartImage";
 
 export default async function TechniciansPage() {
   const t = await getTranslations("Admin");
@@ -70,7 +71,7 @@ export default async function TechniciansPage() {
           <div key={tech.id} className="bg-white border border-[#E8ECEE] rounded-lg p-4 shadow-sm">
             <div className="flex items-start gap-4">
               {tech.image ? (
-                <img src={tech.image} alt={tech.nameEn} className="w-16 h-16 rounded-full object-cover flex-shrink-0" />
+                <SmartImage src={tech.image} alt={tech.nameEn} width={64} height={64} className="w-16 h-16 rounded-full object-cover flex-shrink-0" />
               ) : (
                 <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 flex-shrink-0 text-xs">N/A</div>
               )}

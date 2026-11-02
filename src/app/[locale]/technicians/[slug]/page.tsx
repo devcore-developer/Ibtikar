@@ -10,6 +10,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { UserCircle, Phone, Wrench, Briefcase } from "lucide-react";
 import Link from "next/link";
 import { maintenanceServices } from "@/data/maintenance-services";
+import { SmartImage } from "@/components/ui/SmartImage";
 
 export async function generateStaticParams() {
   const technicians = await prisma.technician.findMany({ select: { slug: true } });
@@ -49,10 +50,12 @@ function TechnicianProfileView({ tech, locale }: { tech: any, locale: string }) 
         <div className="text-center">
           {/* إظهار الصورة أو الأيقونة الافتراضية */}
           {tech.image ? (
-            <img 
-              src={tech.image} 
-              alt={tech.nameAr} 
-              className="w-32 h-32 mx-auto rounded-full object-cover mb-4 border-4 border-white shadow-md" 
+            <SmartImage
+              src={tech.image}
+              alt={locale === "ar" ? tech.nameAr : tech.nameEn}
+              width={128}
+              height={128}
+              className="w-32 h-32 mx-auto rounded-full object-cover mb-4 border-4 border-white shadow-md"
             />
           ) : (
             <div className="w-32 h-32 mx-auto rounded-full bg-muted/10 flex items-center justify-center text-muted/40 mb-4">

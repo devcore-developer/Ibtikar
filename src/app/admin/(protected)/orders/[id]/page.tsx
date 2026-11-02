@@ -4,7 +4,7 @@ import { OrderStatusTimeline } from "@/components/admin/OrderStatusTimeline";
 import { updateOrderStatus, verifyPaymentAction } from "@/app/admin/actions";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+import { SmartImage } from "@/components/ui/SmartImage";
 import { 
   ArrowRight, Package, User, Phone, MapPin, CreditCard, 
   Wallet, Banknote, Clock, MessageSquare, Eye 
@@ -169,7 +169,7 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
                   <p className="text-[#68777D] text-xs mb-2">إثبات التحويل</p>
                   <a href={order.paymentProofUrl} target="_blank" rel="noopener noreferrer" className="block relative group">
                     <div className="relative w-full h-40 rounded-lg overflow-hidden border border-[#E8ECEE]">
-                      <Image src={order.paymentProofUrl} alt="Payment Proof" fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                      <SmartImage src={order.paymentProofUrl} alt="Payment Proof" fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                         <span className="bg-white px-3 py-1 rounded-md text-xs font-medium opacity-0 group-hover:opacity-100 flex items-center gap-1"><Eye size={14} /> عرض الصورة</span>
                       </div>

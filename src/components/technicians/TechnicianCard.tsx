@@ -5,6 +5,7 @@ import { UserCircle, Phone } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { SmartImage } from "@/components/ui/SmartImage";
 
 export function TechnicianCard({ technician }: { technician: any }) {
   const t = useTranslations("Technicians");
@@ -25,9 +26,11 @@ export function TechnicianCard({ technician }: { technician: any }) {
         <CardContent className="p-6 flex flex-col items-center flex-1">
           {/* إظهار الصورة أو الأيقونة الافتراضية */}
           {technician.image ? (
-            <img 
-              src={technician.image} 
+            <SmartImage
+              src={technician.image}
               alt={locale === "ar" ? technician.nameAr : technician.nameEn}
+              width={96}
+              height={96}
               className="w-24 h-24 rounded-full object-cover mb-4 border-4 border-white shadow-md"
             />
           ) : (

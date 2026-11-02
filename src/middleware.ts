@@ -20,6 +20,21 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // العميل اللي فاتح الموقع من غير بادئة لغة في الرابط (زي "/")
+  // لو عنده تفضيل لغة محفوظ في كوكي NEXT_LOCALE بنحترمه هنا.
+  // (localeDetection: false في routing.ts وقّف قراءة الكوكي جوه next-intl
+  //  عشان نستبعد لغة المتصفح تماماً، فبنقرأ الكوكي يدوياً في المكان ده بس)
+  const firstSegment = pathname.split("/")[1];
+  const hasLocalePrefix = firstSegment === "ar" || firstSegment === "en";
+  if (!hasLocalePrefix) {
+    const saved = req.cookies.get("NEXT_LOCALE")?.value;
+    if (saved === "ar" || saved === "en") {
+      const url = req.nextUrl.clone();
+      url.pathname = `/${saved}${pathname === "/" ? "" : pathname}`;
+      return NextResponse.redirect(url);
+    }
+  }
+
   // دع next-intl يتكفل بباقي المسارات (بما فيها تحويل / إلى /ar)
   return intlMiddleware(req);
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { SmartImage } from "@/components/ui/SmartImage";
 import { useTranslations, useLocale } from "next-intl";
 import { useCart } from "@/lib/cart/CartContext";
 import { formatCurrency } from "@/lib/format";
@@ -45,7 +45,7 @@ export function ProductCard({ product }: { product: any }) {
 
       <div className="relative aspect-[4/3] bg-[#F6F8F9] flex items-center justify-center p-6 overflow-hidden">
         {product.image ? (
-          <Image 
+          <SmartImage 
             src={product.image} 
             alt={locale === "ar" ? product.nameAr : product.nameEn}
             fill

@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CreditCard, Banknote, Wallet, Copy, Check, Upload, Loader2 } from "lucide-react";
 import { createOrder, uploadImageAction } from "@/app/admin/actions";
+import { SmartImage } from "@/components/ui/SmartImage";
 
 export default function CheckoutClient({ settings }: { settings: Record<string, string> }) {
   const { items, subtotal, clearCart, isInitialized } = useCart();
@@ -222,7 +223,7 @@ export default function CheckoutClient({ settings }: { settings: Record<string, 
               <input type="file" accept="image/*" onChange={handleProofUpload} className="hidden" id="proofUpload" disabled={isUploading} />
               {proofUrl ? (
                 <div className="relative w-full max-w-xs aspect-video rounded-lg overflow-hidden border">
-                  <img src={proofUrl} alt="Proof" className="w-full h-full object-cover" />
+                  <SmartImage src={proofUrl} alt="Proof" fill sizes="(max-width: 768px) 100vw, 400px" className="object-cover" />
                   <button type="button" onClick={() => setProofUrl("")} className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full text-xs">X</button>
                 </div>
               ) : (

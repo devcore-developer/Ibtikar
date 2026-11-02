@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { Package } from "lucide-react";
 import { ProductDetailsClient } from "@/components/products/ProductDetailsClient";
+import { SmartImage } from "@/components/ui/SmartImage";
 
 export async function generateStaticParams() {
   const products = await prisma.product.findMany({ select: { slug: true } });
@@ -62,7 +63,13 @@ function ProductDetailsView({ product, category, related, locale }: { product: a
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12 mb-20">
         <div className="aspect-square bg-muted/5 border border-border rounded-xl flex items-center justify-center relative overflow-hidden">
           {product.image ? (
-            <img src={product.image} alt={product.nameEn} className="w-full h-full object-contain" />
+            <SmartImage
+              src={product.image}
+              alt={locale === "ar" ? product.nameAr : product.nameEn}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-contain"
+            />
           ) : (
             <Package size={128} className="text-muted/20" strokeWidth={1} />
           )}

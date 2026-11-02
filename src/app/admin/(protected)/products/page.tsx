@@ -4,6 +4,7 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { getLocalizedField } from "@/lib/localization";
 import Link from "next/link";
 import { Pencil, Power, Trash2 } from "lucide-react";
+import { SmartImage } from "@/components/ui/SmartImage";
 
 export default async function AdminProductsPage() {
   const t = await getTranslations("Admin");
@@ -82,7 +83,7 @@ export default async function AdminProductsPage() {
           <div key={p.id} className="bg-white border border-[#E8ECEE] rounded-lg p-4 shadow-sm">
             <div className="flex items-start gap-4">
               {p.image ? (
-                <img src={p.image} alt="Product" className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+                <SmartImage src={p.image} alt="Product" width={64} height={64} className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
               ) : (
                 <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 flex-shrink-0 text-xs">N/A</div>
               )}

@@ -21,14 +21,20 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* 1) القسم الرئيسي Hero — زي ما هو بالظبط من غير أي تغيير */}
       <HeroSection />
-      <ServiceHighlights />
-      
-      <CategoriesSection categories={categories} />
+
+      {/* 2) المنتجات المميزة — تحت الـ Hero مباشرة */}
       <FeaturedProducts products={products} />
+
+      {/* 3) تصفح قطع الغيار */}
+      <CategoriesSection categories={categories} />
+
+      {/* 4) فريق الفنيين */}
       <TechniciansSection technicians={technicians} />
-      
-      {/* باقي مكونات الصفحة إذا وجدت */}
+
+      {/* 5) ميزات الموقع — آخر سيكشن في الصفحة */}
+      <ServiceHighlights />
     </>
   );
 }
