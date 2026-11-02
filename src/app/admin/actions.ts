@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { encrypt, getSession } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { generateSlug } from "@/lib/utils";
+import { uploadImageToR2, MAX_IMAGE_BYTES } from "@/lib/r2";
 
 // ==========================================
 // Auth Actions
@@ -34,33 +35,25 @@ export async function logoutAction() {
 }
 
 // ==========================================
-// Upload Action (ImgBB)
+// Upload Action (Cloudflare R2 — بدون ImgBB)
 // ==========================================
+// دي بتستخدم في الكاشير (checkout) لرفع إثبات الدفع، وبترفع على R2 مباشرة.
+// جوّه uploadImageToR2 فيه تحقق كامل (النوع، الحجم، الـ magic bytes).
 export async function uploadImageAction(formData: FormData) {
   const file = formData.get("file") as File;
   if (!file) throw new Error("No file provided");
 
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  const base64Image = buffer.toString("base64");
-
-  const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_API_KEY}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      image: base64Image,
-    }),
-  });
-
-  if (!response.ok) {
-    console.error("ImgBB upload error:", await response.text());
-    throw new Error("Failed to upload image to ImgBB");
+  if (file.size > MAX_IMAGE_BYTES) {
+    throw new Error("File size exceeds 10MB");
+  }
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Only image files are allowed");
   }
 
-  const data = await response.json();
-  return data.data.url; 
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const folder = (formData.get("folder") as string) || "payments";
+  const result = await uploadImageToR2(buffer, file.type, folder);
+  return result.url;
 }
 
 // ==========================================
