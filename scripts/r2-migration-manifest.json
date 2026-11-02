@@ -1,7 +1,7 @@
 {
   "version": 1,
   "createdAt": "2026-11-01T13:21:05.119Z",
-  "updatedAt": "2026-11-02T07:16:08.907Z",
+  "updatedAt": "2026-11-02T08:07:38.369Z",
   "migrations": {
     "https://i.ibb.co/LXXhR2kS/ad9ea916bbd0.jpg": {
       "status": "migrated",
@@ -1107,17 +1107,23 @@
       ]
     },
     "https://i.ibb.co/Ps6Z5bX9/f5320cade8f8.jpg": {
-      "status": "failed",
-      "error": "download failed: HTTP 503",
-      "attempts": 5,
-      "updatedAt": "2026-11-02T06:54:45.957Z",
+      "status": "migrated",
+      "newUrl": "https://pub-e5e0f17b3fb349d797fe1f2de98189ab.r2.dev/products/bbe26df7b7d73514.jpg",
+      "r2Key": "products/bbe26df7b7d73514.jpg",
+      "sha256": "bbe26df7b7d73514cb5149c62da75c1a2cd1cbf01c44caa20fe6263e385fbefb",
+      "bytes": 21230,
+      "contentType": "image/jpeg",
+      "error": null,
+      "attempts": 6,
+      "updatedAt": "2026-11-02T08:01:19.036Z",
       "records": [
         {
           "entityType": "products",
           "recordId": "f627ecc2-6e52-48ed-8976-1dffcdc7e509",
           "field": "image",
           "url": "https://i.ibb.co/Ps6Z5bX9/f5320cade8f8.jpg",
-          "dbUpdated": false
+          "dbUpdated": true,
+          "dbUpdatedAt": "2026-11-02T08:01:20.851Z"
         }
       ]
     },
@@ -1390,17 +1396,23 @@
       ]
     },
     "https://i.ibb.co/RkxHXbQ6/fea1de7725cd.jpg": {
-      "status": "failed",
-      "error": "download failed: HTTP 503",
-      "attempts": 5,
-      "updatedAt": "2026-11-02T06:57:28.894Z",
+      "status": "migrated",
+      "newUrl": "https://pub-e5e0f17b3fb349d797fe1f2de98189ab.r2.dev/products/b24d4214d503f7ed.jpg",
+      "r2Key": "products/b24d4214d503f7ed.jpg",
+      "sha256": "b24d4214d503f7ed2e2ac7fdd255168eec53eaa807cafe33a4c9776f0b50823d",
+      "bytes": 15213,
+      "contentType": "image/jpeg",
+      "error": null,
+      "attempts": 6,
+      "updatedAt": "2026-11-02T08:01:21.670Z",
       "records": [
         {
           "entityType": "products",
           "recordId": "2acdefbc-400a-4c03-9418-51ed863749d2",
           "field": "image",
           "url": "https://i.ibb.co/RkxHXbQ6/fea1de7725cd.jpg",
-          "dbUpdated": false
+          "dbUpdated": true,
+          "dbUpdatedAt": "2026-11-02T08:01:22.534Z"
         }
       ]
     },
@@ -1608,17 +1620,23 @@
       ]
     },
     "https://i.ibb.co/TBdPHCWx/fb4a7e28dbd5.jpg": {
-      "status": "failed",
-      "error": "download failed: HTTP 503",
-      "attempts": 5,
-      "updatedAt": "2026-11-02T06:59:39.521Z",
+      "status": "migrated",
+      "newUrl": "https://pub-e5e0f17b3fb349d797fe1f2de98189ab.r2.dev/products/bfb925b6a9cb25ed.jpg",
+      "r2Key": "products/bfb925b6a9cb25ed.jpg",
+      "sha256": "bfb925b6a9cb25edd37d9d8481c26ac05406af72a93fdf295cae5fb4dc3ea58c",
+      "bytes": 15310,
+      "contentType": "image/jpeg",
+      "error": null,
+      "attempts": 6,
+      "updatedAt": "2026-11-02T08:01:23.349Z",
       "records": [
         {
           "entityType": "products",
           "recordId": "a6deb55e-c800-4574-97c8-8aa529612433",
           "field": "image",
           "url": "https://i.ibb.co/TBdPHCWx/fb4a7e28dbd5.jpg",
-          "dbUpdated": false
+          "dbUpdated": true,
+          "dbUpdatedAt": "2026-11-02T08:01:24.185Z"
         }
       ]
     },
@@ -2387,17 +2405,23 @@
       ]
     },
     "https://i.ibb.co/fdGT5qTR/36c7ff98fac4.jpg": {
-      "status": "failed",
-      "error": "download failed: HTTP 503",
-      "attempts": 5,
-      "updatedAt": "2026-11-02T07:01:18.771Z",
+      "status": "migrated",
+      "newUrl": "https://pub-e5e0f17b3fb349d797fe1f2de98189ab.r2.dev/products/3f6ea77e1a7bf6b6.jpg",
+      "r2Key": "products/3f6ea77e1a7bf6b6.jpg",
+      "sha256": "3f6ea77e1a7bf6b64e4aa333703d30e1e4706a94ead640f59fb1cce761ae9e5e",
+      "bytes": 16753,
+      "contentType": "image/jpeg",
+      "error": null,
+      "attempts": 6,
+      "updatedAt": "2026-11-02T08:01:25.003Z",
       "records": [
         {
           "entityType": "products",
           "recordId": "fb4fb6a0-5ace-4901-9e7a-2e9a35bd527d",
           "field": "image",
           "url": "https://i.ibb.co/fdGT5qTR/36c7ff98fac4.jpg",
-          "dbUpdated": false
+          "dbUpdated": true,
+          "dbUpdatedAt": "2026-11-02T08:02:30.724Z"
         }
       ]
     },
@@ -2481,17 +2505,23 @@
       ]
     },
     "https://i.ibb.co/VWRB2r96/f230f6c899da.jpg": {
-      "status": "failed",
-      "error": "download failed: HTTP 503",
-      "attempts": 5,
-      "updatedAt": "2026-11-02T07:02:53.935Z",
+      "status": "migrated",
+      "newUrl": "https://pub-e5e0f17b3fb349d797fe1f2de98189ab.r2.dev/products/da070cbe6afcba44.jpg",
+      "r2Key": "products/da070cbe6afcba44.jpg",
+      "sha256": "da070cbe6afcba442b166929c5a6d2483ae61c601c918ecffaa49da9bade7a90",
+      "bytes": 27928,
+      "contentType": "image/jpeg",
+      "error": null,
+      "attempts": 7,
+      "updatedAt": "2026-11-02T08:07:04.977Z",
       "records": [
         {
           "entityType": "products",
           "recordId": "29a774af-549d-4753-b2ff-1d4e5dbf4c04",
           "field": "image",
           "url": "https://i.ibb.co/VWRB2r96/f230f6c899da.jpg",
-          "dbUpdated": false
+          "dbUpdated": true,
+          "dbUpdatedAt": "2026-11-02T08:07:38.368Z"
         }
       ]
     },
@@ -3014,17 +3044,23 @@
       ]
     },
     "https://i.ibb.co/bMD3BDP7/088a22698454.jpg": {
-      "status": "failed",
-      "error": "download failed: HTTP 503",
-      "attempts": 5,
-      "updatedAt": "2026-11-02T07:07:03.891Z",
+      "status": "migrated",
+      "newUrl": "https://pub-e5e0f17b3fb349d797fe1f2de98189ab.r2.dev/products/e06be8ce8aacf9de.jpg",
+      "r2Key": "products/e06be8ce8aacf9de.jpg",
+      "sha256": "e06be8ce8aacf9dee532cf1dbeabb86c9f80461e7253bdfa25fa85b25b44761f",
+      "bytes": 8756,
+      "contentType": "image/jpeg",
+      "error": null,
+      "attempts": 6,
+      "updatedAt": "2026-11-02T08:04:07.385Z",
       "records": [
         {
           "entityType": "products",
           "recordId": "74c8a495-a11f-4d81-b31d-f760a94460f2",
           "field": "image",
           "url": "https://i.ibb.co/bMD3BDP7/088a22698454.jpg",
-          "dbUpdated": false
+          "dbUpdated": true,
+          "dbUpdatedAt": "2026-11-02T08:04:08.523Z"
         }
       ]
     },
@@ -3155,17 +3191,23 @@
       ]
     },
     "https://i.ibb.co/jPZ35qw1/bc3a1fb59a73.jpg": {
-      "status": "failed",
-      "error": "download failed: HTTP 503",
-      "attempts": 5,
-      "updatedAt": "2026-11-02T07:08:39.709Z",
+      "status": "migrated",
+      "newUrl": "https://pub-e5e0f17b3fb349d797fe1f2de98189ab.r2.dev/products/041d4ebaca0c6f4f.jpg",
+      "r2Key": "products/041d4ebaca0c6f4f.jpg",
+      "sha256": "041d4ebaca0c6f4fbca3d3aa720c3ca36af3111bf4b8e69f7a72748974f4834b",
+      "bytes": 29298,
+      "contentType": "image/jpeg",
+      "error": null,
+      "attempts": 6,
+      "updatedAt": "2026-11-02T08:04:09.336Z",
       "records": [
         {
           "entityType": "products",
           "recordId": "aa15f66e-7405-4d6e-9db4-d4b486cfa9f7",
           "field": "image",
           "url": "https://i.ibb.co/jPZ35qw1/bc3a1fb59a73.jpg",
-          "dbUpdated": false
+          "dbUpdated": true,
+          "dbUpdatedAt": "2026-11-02T08:04:10.297Z"
         }
       ]
     },
@@ -3737,17 +3779,23 @@
       ]
     },
     "https://i.ibb.co/M3X8GMR/abdc91872f52.jpg": {
-      "status": "failed",
-      "error": "download failed: HTTP 503",
-      "attempts": 5,
-      "updatedAt": "2026-11-02T07:10:14.547Z",
+      "status": "migrated",
+      "newUrl": "https://pub-e5e0f17b3fb349d797fe1f2de98189ab.r2.dev/products/059efab67f94522b.jpg",
+      "r2Key": "products/059efab67f94522b.jpg",
+      "sha256": "059efab67f94522bf127ffd90ea4a353ee8737423b37c3c2c7aa0c7593d4e320",
+      "bytes": 20021,
+      "contentType": "image/jpeg",
+      "error": null,
+      "attempts": 6,
+      "updatedAt": "2026-11-02T08:04:11.113Z",
       "records": [
         {
           "entityType": "products",
           "recordId": "232a7dea-65c1-4408-80c8-d8227d0081cf",
           "field": "image",
           "url": "https://i.ibb.co/M3X8GMR/abdc91872f52.jpg",
-          "dbUpdated": false
+          "dbUpdated": true,
+          "dbUpdatedAt": "2026-11-02T08:04:11.946Z"
         }
       ]
     },
@@ -4598,17 +4646,23 @@
       ]
     },
     "https://i.ibb.co/whHqRY0V/5d4d342b8878.jpg": {
-      "status": "failed",
-      "error": "download failed: HTTP 503",
-      "attempts": 5,
-      "updatedAt": "2026-11-02T07:12:59.278Z",
+      "status": "migrated",
+      "newUrl": "https://pub-e5e0f17b3fb349d797fe1f2de98189ab.r2.dev/products/ad5c4b38d10aa22b.jpg",
+      "r2Key": "products/ad5c4b38d10aa22b.jpg",
+      "sha256": "ad5c4b38d10aa22ba0d78346bff00fa4adee6413c5787b7883d7a122fb53b19d",
+      "bytes": 14017,
+      "contentType": "image/jpeg",
+      "error": null,
+      "attempts": 6,
+      "updatedAt": "2026-11-02T08:04:12.767Z",
       "records": [
         {
           "entityType": "products",
           "recordId": "7b00ed62-9869-4569-bdd9-8993baa412dc",
           "field": "image",
           "url": "https://i.ibb.co/whHqRY0V/5d4d342b8878.jpg",
-          "dbUpdated": false
+          "dbUpdated": true,
+          "dbUpdatedAt": "2026-11-02T08:05:18.065Z"
         }
       ]
     },
@@ -4999,17 +5053,23 @@
       ]
     },
     "https://i.ibb.co/ks1Xg2H1/28fa59467c88.jpg": {
-      "status": "failed",
-      "error": "download failed: HTTP 503",
-      "attempts": 5,
-      "updatedAt": "2026-11-02T07:14:34.280Z",
+      "status": "migrated",
+      "newUrl": "https://pub-e5e0f17b3fb349d797fe1f2de98189ab.r2.dev/products/0ef3cb462bc987a0.jpg",
+      "r2Key": "products/0ef3cb462bc987a0.jpg",
+      "sha256": "0ef3cb462bc987a01760db195262deb1db87938a5b797498cf7574990c18eff6",
+      "bytes": 59633,
+      "contentType": "image/jpeg",
+      "error": null,
+      "attempts": 6,
+      "updatedAt": "2026-11-02T08:05:18.872Z",
       "records": [
         {
           "entityType": "products",
           "recordId": "cc9b3463-4cac-402b-ae1a-f5657392931e",
           "field": "image",
           "url": "https://i.ibb.co/ks1Xg2H1/28fa59467c88.jpg",
-          "dbUpdated": false
+          "dbUpdated": true,
+          "dbUpdatedAt": "2026-11-02T08:05:20.043Z"
         }
       ]
     },
