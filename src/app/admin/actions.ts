@@ -311,6 +311,13 @@ export async function createOrder(formData: FormData) {
             0
           ),
           total: order.total,
+          // أسماء القطع والأسعار — نفس القيم المحفوظة في الطلب بالظبط
+          items: items.map((item: any) => ({
+            name: item.nameAr || item.nameEn,
+            quantity: item.quantity,
+            price: item.price,
+            lineTotal: item.price * item.quantity,
+          })),
         });
       });
     } catch (notificationError) {

@@ -26,6 +26,12 @@ const NTFY_PRIORITY_HIGH = 4;
 /** ntfy topics allow letters, digits, "_" and "-" only. Also blocks topic injection. */
 const VALID_TOPIC_RE = /^[A-Za-z0-9_-]{1,64}$/;
 
+/**
+ * Max item lines inside the order notification. Protects the message from
+ * hitting ntfy's ~4096-character limit on very large orders.
+ */
+const MAX_ITEM_LINES = 12;
+
 interface NtfyPublishInput {
   title: string;
   message: string;
@@ -95,6 +101,16 @@ function sanitizeLine(value: string, maxLength: number): string {
   return clean.length > maxLength ? `${clean.slice(0, maxLength - 1)}…` : clean;
 }
 
+export interface OrderItemNotificationData {
+  /** Product display name — same value stored on the order item (nameAr || nameEn). */
+  name: string;
+  quantity: number;
+  /** Unit price. */
+  price: number;
+  /** quantity × price — same value stored on the order item. */
+  lineTotal: number;
+}
+
 export interface SparePartsOrderNotificationData {
   orderId: string;
   customerName: string;
@@ -102,25 +118,70 @@ export interface SparePartsOrderNotificationData {
   itemCount: number;
   /** Order grand total (already includes delivery fee). */
   total: number;
+  /** Line items so the owner sees exactly WHICH parts were ordered and at WHAT price. */
+  items: OrderItemNotificationData[];
+}
+
+/** Formats an amount like the rest of the site (src/lib/format.ts): 3 decimals + KWD. */
+function safeFixed(amount: number): string {
+  return Number.isFinite(amount) ? amount.toFixed(3) : "0.000";
+}
+
+function safeInt(value: number): string {
+  return Number.isFinite(value) ? String(Math.floor(value)) : "0";
+}
+
+/**
+ * Builds the per-item lines: "• name — qty × unit = line KWD".
+ * Names are sanitized (newlines collapsed) because item names arrive from the
+ * client cart payload; the list is capped to keep the message small.
+ */
+function buildOrderItemLines(items: OrderItemNotificationData[]): string {
+  const safeItems = (Array.isArray(items) ? items : [])
+    .filter((item) => item && typeof item?.name === "string" && item.name.trim() !== "")
+    .map((item) => ({
+      name: sanitizeLine(item.name, 48),
+      quantity: Number(item.quantity),
+      price: Number(item.price),
+      lineTotal: Number(item.lineTotal),
+    }));
+
+  if (safeItems.length === 0) return "";
+
+  const shown = safeItems.slice(0, MAX_ITEM_LINES);
+  const lines = shown.map(
+    (item) =>
+      `• ${item.name} — ${safeInt(item.quantity)} × ${safeFixed(item.price)} = ${safeFixed(item.lineTotal)} KWD`
+  );
+
+  const hiddenCount = safeItems.length - shown.length;
+  if (hiddenCount > 0) lines.push(`• … and ${hiddenCount} more item(s)`);
+
+  return lines.join("\n");
 }
 
 /**
  * Owner notification for a successfully created spare-parts order.
+ * Includes every ordered part with its name, quantity and price.
  * Await it inside after() — it resolves fast and never rejects.
  */
 export async function notifyNewSparePartsOrder(
   data: SparePartsOrderNotificationData
 ): Promise<void> {
-  const message = [
+  const parts = [
     `New spare parts order #${data.orderId}`,
     `Customer: ${sanitizeLine(data.customerName, 60)}`,
     `Items: ${data.itemCount}`,
-    `Total: ${data.total.toFixed(3)} KWD`,
-  ].join("\n");
+  ];
+
+  const itemLines = buildOrderItemLines(data.items);
+  if (itemLines) parts.push("", itemLines);
+
+  parts.push(`Total: ${safeFixed(data.total)} KWD`);
 
   await publishToNtfy({
     title: "Ebtekar - New Spare Parts Order",
-    message,
+    message: parts.join("\n"),
     tags: ["shopping_cart"],
   });
 }
